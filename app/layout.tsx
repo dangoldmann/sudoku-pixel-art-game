@@ -7,8 +7,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'Pixel Sudoku - Solve Puzzles, Reveal Art',
+  description: 'A unique Sudoku game where solving puzzles reveals hidden pixel art. Features 9x9 and 16x16 grids with multiple difficulty levels.',
   generator: 'v0.app',
   icons: {
     icon: [
