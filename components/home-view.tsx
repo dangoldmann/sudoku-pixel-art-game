@@ -56,13 +56,13 @@ export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, 
         </div>
 
         {/* Grid Size Selection */}
-        <Card className="border-border/50">
-          <CardHeader className="pb-3">
+        <Card className="border-border/50 gap-2 py-4">
+          <CardHeader className="pb-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Grid Size
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent>
             <div className="grid grid-cols-2 gap-3">
               {gridSizes.map(({ value, label, icon: Icon }) => (
                 <Card
