@@ -4,12 +4,16 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { GridSize, Difficulty } from '@/lib/game-data';
-import { Grid3x3, Grid2x2, Palette, Play } from 'lucide-react';
+import type { SavedGame } from '@/hooks/use-game-storage';
+import { Grid3x3, Grid2x2, Palette, Play, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatTime, getProgress } from '@/lib/sudoku-engine';
 
 interface HomeViewProps {
   onStartGame: (gridSize: GridSize, difficulty: Difficulty) => void;
   onOpenGallery: () => void;
+  onResumeGame: (saved: SavedGame) => void;
+  savedGame: SavedGame | null;
   completedCount: number;
 }
 
@@ -24,7 +28,7 @@ const difficulties: { value: Difficulty; label: string; description: string }[] 
   { value: 'hard', label: 'Hard', description: '35% pre-filled' },
 ];
 
-export function HomeView({ onStartGame, onOpenGallery, completedCount }: HomeViewProps) {
+export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, completedCount }: HomeViewProps) {
   const [selectedSize, setSelectedSize] = useState<GridSize>(9);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('easy');
 
@@ -35,7 +39,7 @@ export function HomeView({ onStartGame, onOpenGallery, completedCount }: HomeVie
         <div className="text-center space-y-3">
           <div className="flex justify-center">
             <div className="relative">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center shadow-lg shadow-primary/25">
+              <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-primary/80 to-primary flex items-center justify-center shadow-lg shadow-primary/25">
                 <Palette className="w-8 h-8 text-primary-foreground" />
               </div>
               <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-secondary border-2 border-background flex items-center justify-center">
@@ -52,13 +56,13 @@ export function HomeView({ onStartGame, onOpenGallery, completedCount }: HomeVie
         </div>
 
         {/* Grid Size Selection */}
-        <Card className="border-border/50">
-          <CardHeader className="pb-3">
+        <Card className="border-border/50 gap-2 py-4">
+          <CardHeader className="pb-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Grid Size
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent>
             <div className="grid grid-cols-2 gap-3">
               {gridSizes.map(({ value, label, icon: Icon }) => (
                 <Card
@@ -136,17 +140,43 @@ export function HomeView({ onStartGame, onOpenGallery, completedCount }: HomeVie
           </CardContent>
         </Card>
 
+        {/* Resume Game */}
+        {savedGame && (
+          <Card className="border-primary/50 bg-primary/5">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-foreground">
+                    Continue Game
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    {savedGame.level.gridSize}x{savedGame.level.gridSize} {savedGame.level.difficulty} - {getProgress(savedGame.gameState)}% complete - {formatTime(savedGame.elapsedTime)}
+                  </div>
+                </div>
+                <Button
+                  onClick={() => onResumeGame(savedGame)}
+                  size="sm"
+                  className="gap-1.5 shrink-0"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  Resume
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Action Buttons */}
         <div className="space-y-3">
-          <Button 
+          <Button
             onClick={() => onStartGame(selectedSize, selectedDifficulty)}
             className="w-full h-12 text-base font-semibold gap-2"
             size="lg"
           >
             <Play className="w-5 h-5" />
-            Start Game
+            {savedGame ? 'New Game' : 'Start Game'}
           </Button>
-          
+
           <Button
             variant="outline"
             onClick={onOpenGallery}

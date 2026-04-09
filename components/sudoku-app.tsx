@@ -4,31 +4,62 @@ import { useState, useCallback } from 'react';
 import { HomeView } from './home-view';
 import { GameView } from './game-view';
 import { GalleryView } from './gallery-view';
-import { useGameStorage } from '@/hooks/use-game-storage';
+import { useGameStorage, type SavedGame } from '@/hooks/use-game-storage';
 import { getRandomLevel, type Level, type GridSize, type Difficulty } from '@/lib/game-data';
+import type { GameState } from '@/lib/sudoku-engine';
 
 type View = 'home' | 'game' | 'gallery';
 
 export function SudokuApp() {
   const [view, setView] = useState<View>('home');
   const [currentLevel, setCurrentLevel] = useState<Level | null>(null);
-  const { completedLevels, saveCompletedLevel, isLoaded } = useGameStorage();
+  const [resumeData, setResumeData] = useState<{ gameState: GameState; elapsedTime: number } | null>(null);
+  const { 
+    completedLevels, 
+    savedGame, 
+    saveCompletedLevel, 
+    saveCurrentGame,
+    clearSavedGame,
+    isLoaded 
+  } = useGameStorage();
 
   const handleStartGame = useCallback((gridSize: GridSize, difficulty: Difficulty) => {
+    clearSavedGame();
     const level = getRandomLevel(gridSize, difficulty);
     setCurrentLevel(level);
+    setResumeData(null);
+    setView('game');
+  }, [clearSavedGame]);
+
+  const handleResumeGame = useCallback((saved: SavedGame) => {
+    setCurrentLevel(saved.level);
+    setResumeData({
+      gameState: saved.gameState,
+      elapsedTime: saved.elapsedTime,
+    });
     setView('game');
   }, []);
 
   const handleGameComplete = useCallback((timeElapsed: number, mistakes: number) => {
     if (currentLevel) {
       saveCompletedLevel(currentLevel.id, timeElapsed, mistakes);
+      clearSavedGame();
     }
-  }, [currentLevel, saveCompletedLevel]);
+  }, [currentLevel, saveCompletedLevel, clearSavedGame]);
+
+  const handleSaveAndExit = useCallback((gameState: GameState, elapsedTime: number) => {
+    if (currentLevel && !gameState.isComplete) {
+      saveCurrentGame(currentLevel, gameState, elapsedTime);
+    }
+    setView('home');
+    setCurrentLevel(null);
+    setResumeData(null);
+  }, [currentLevel, saveCurrentGame]);
 
   const handleBackToHome = useCallback(() => {
     setView('home');
     setCurrentLevel(null);
+    setResumeData(null);
   }, []);
 
   const handleOpenGallery = useCallback(() => {
@@ -48,7 +79,8 @@ export function SudokuApp() {
     return (
       <GameView
         level={currentLevel}
-        onBack={handleBackToHome}
+        resumeData={resumeData}
+        onBack={handleSaveAndExit}
         onComplete={handleGameComplete}
       />
     );
@@ -67,6 +99,8 @@ export function SudokuApp() {
     <HomeView
       onStartGame={handleStartGame}
       onOpenGallery={handleOpenGallery}
+      onResumeGame={handleResumeGame}
+      savedGame={savedGame}
       completedCount={completedLevels.length}
     />
   );
