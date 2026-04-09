@@ -8,11 +8,7 @@ interface PixelArtPreviewProps {
   size?: number;
 }
 
-export function PixelArtPreview({ 
-  colors, 
-  gridSize, 
-  size = 120 
-}: PixelArtPreviewProps) {
+export function PixelArtPreview({ colors, gridSize, size = 120 }: PixelArtPreviewProps) {
   const cellSize = size / gridSize;
 
   return (
@@ -27,10 +23,7 @@ export function PixelArtPreview({
       }}
     >
       {colors.flat().map((color, index) => (
-        <div
-          key={index}
-          style={{ backgroundColor: color }}
-        />
+        <div key={index} style={{ backgroundColor: color }} />
       ))}
     </div>
   );

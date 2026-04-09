@@ -28,7 +28,13 @@ const difficulties: { value: Difficulty; label: string; description: string }[] 
   { value: 'hard', label: 'Hard', description: '35% pre-filled' },
 ];
 
-export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, completedCount }: HomeViewProps) {
+export function HomeView({
+  onStartGame,
+  onOpenGallery,
+  onResumeGame,
+  savedGame,
+  completedCount,
+}: HomeViewProps) {
   const [selectedSize, setSelectedSize] = useState<GridSize>(9);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('easy');
 
@@ -47,9 +53,7 @@ export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, 
               </div>
             </div>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Pixel Sudoku
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Pixel Sudoku</h1>
           <p className="text-muted-foreground text-balance">
             Solve puzzles to reveal hidden pixel art masterpieces
           </p>
@@ -58,9 +62,7 @@ export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, 
         {/* Grid Size Selection */}
         <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Grid Size
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Grid Size</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-3">
@@ -69,21 +71,23 @@ export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, 
                   key={value}
                   className={cn(
                     'cursor-pointer transition-all duration-200 hover:border-primary/50 py-0',
-                    selectedSize === value
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border'
+                    selectedSize === value ? 'border-primary bg-primary/5' : 'border-border',
                   )}
                   onClick={() => setSelectedSize(value)}
                 >
                   <CardContent className="flex items-center justify-center gap-3 p-4 px-4">
-                    <Icon className={cn(
-                      'h-5 w-5 transition-colors',
-                      selectedSize === value ? 'text-primary' : 'text-muted-foreground'
-                    )} />
-                    <span className={cn(
-                      'font-medium transition-colors',
-                      selectedSize === value ? 'text-foreground' : 'text-muted-foreground'
-                    )}>
+                    <Icon
+                      className={cn(
+                        'h-5 w-5 transition-colors',
+                        selectedSize === value ? 'text-primary' : 'text-muted-foreground',
+                      )}
+                    />
+                    <span
+                      className={cn(
+                        'font-medium transition-colors',
+                        selectedSize === value ? 'text-foreground' : 'text-muted-foreground',
+                      )}
+                    >
                       {label}
                     </span>
                   </CardContent>
@@ -96,9 +100,7 @@ export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, 
         {/* Difficulty Selection */}
         <Card className="border-border/50">
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Difficulty
-            </CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Difficulty</CardTitle>
           </CardHeader>
           <CardContent className="pt-0 space-y-2">
             {difficulties.map(({ value, label, description }) => (
@@ -106,30 +108,30 @@ export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, 
                 key={value}
                 className={cn(
                   'cursor-pointer transition-all duration-200 hover:border-primary/50 py-0',
-                  selectedDifficulty === value
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border'
+                  selectedDifficulty === value ? 'border-primary bg-primary/5' : 'border-border',
                 )}
                 onClick={() => setSelectedDifficulty(value)}
               >
                 <CardContent className="flex items-center justify-between p-4 px-4">
                   <div>
-                    <div className={cn(
-                      'font-medium transition-colors',
-                      selectedDifficulty === value ? 'text-foreground' : 'text-muted-foreground'
-                    )}>
+                    <div
+                      className={cn(
+                        'font-medium transition-colors',
+                        selectedDifficulty === value ? 'text-foreground' : 'text-muted-foreground',
+                      )}
+                    >
                       {label}
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {description}
-                    </div>
+                    <div className="text-xs text-muted-foreground">{description}</div>
                   </div>
-                  <div className={cn(
-                    'w-4 h-4 rounded-full border-2 transition-all',
-                    selectedDifficulty === value
-                      ? 'border-primary bg-primary'
-                      : 'border-muted-foreground'
-                  )}>
+                  <div
+                    className={cn(
+                      'w-4 h-4 rounded-full border-2 transition-all',
+                      selectedDifficulty === value
+                        ? 'border-primary bg-primary'
+                        : 'border-muted-foreground',
+                    )}
+                  >
                     {selectedDifficulty === value && (
                       <div className="w-full h-full rounded-full bg-primary-foreground scale-50" />
                     )}
@@ -146,11 +148,11 @@ export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, 
             <CardContent className="p-4">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-foreground">
-                    Continue Game
-                  </div>
+                  <div className="text-sm font-medium text-foreground">Continue Game</div>
                   <div className="text-xs text-muted-foreground mt-0.5">
-                    {savedGame.level.gridSize}x{savedGame.level.gridSize} {savedGame.level.difficulty} - {getProgress(savedGame.gameState)}% complete - {formatTime(savedGame.elapsedTime)}
+                    {savedGame.level.gridSize}x{savedGame.level.gridSize}{' '}
+                    {savedGame.level.difficulty} - {getProgress(savedGame.gameState)}% complete -{' '}
+                    {formatTime(savedGame.elapsedTime)}
                   </div>
                 </div>
                 <Button
@@ -177,11 +179,7 @@ export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, 
             {savedGame ? 'New Game' : 'Start Game'}
           </Button>
 
-          <Button
-            variant="outline"
-            onClick={onOpenGallery}
-            className="w-full"
-          >
+          <Button variant="outline" onClick={onOpenGallery} className="w-full">
             <Palette className="w-4 h-4 mr-2" />
             Gallery
             {completedCount > 0 && (

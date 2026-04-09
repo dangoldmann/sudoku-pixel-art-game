@@ -27,8 +27,8 @@ interface GameViewProps {
 }
 
 export function GameView({ level, resumeData, onBack, onComplete }: GameViewProps) {
-  const [gameState, setGameState] = useState<GameState>(() => 
-    resumeData?.gameState ?? initializeGame(level)
+  const [gameState, setGameState] = useState<GameState>(
+    () => resumeData?.gameState ?? initializeGame(level),
   );
   const [showCompleted, setShowCompleted] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(resumeData?.elapsedTime ?? 0);
@@ -37,11 +37,11 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
   // Timer
   useEffect(() => {
     if (gameState.isComplete) return;
-    
+
     const interval = setInterval(() => {
       setElapsedTime(Date.now() - startTime);
     }, 1000);
-    
+
     return () => clearInterval(interval);
   }, [startTime, gameState.isComplete]);
 
@@ -59,70 +59,84 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gameState.isComplete) return;
-      
+
       const { selectedCell } = gameState;
-      
+
       // Arrow keys for navigation
       if (selectedCell && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
         e.preventDefault();
         let newRow = selectedCell.row;
         let newCol = selectedCell.col;
-        
+
         switch (e.key) {
-          case 'ArrowUp': newRow = Math.max(0, newRow - 1); break;
-          case 'ArrowDown': newRow = Math.min(level.gridSize - 1, newRow + 1); break;
-          case 'ArrowLeft': newCol = Math.max(0, newCol - 1); break;
-          case 'ArrowRight': newCol = Math.min(level.gridSize - 1, newCol + 1); break;
+          case 'ArrowUp':
+            newRow = Math.max(0, newRow - 1);
+            break;
+          case 'ArrowDown':
+            newRow = Math.min(level.gridSize - 1, newRow + 1);
+            break;
+          case 'ArrowLeft':
+            newCol = Math.max(0, newCol - 1);
+            break;
+          case 'ArrowRight':
+            newCol = Math.min(level.gridSize - 1, newCol + 1);
+            break;
         }
-        
-        setGameState(prev => selectCell(prev, newRow, newCol));
+
+        setGameState((prev) => selectCell(prev, newRow, newCol));
         return;
       }
-      
+
       // Number input
       if (selectedCell) {
         const num = parseInt(e.key);
         if (!isNaN(num) && num >= 1 && num <= level.gridSize) {
-          setGameState(prev => enterNumber(prev, selectedCell.row, selectedCell.col, num));
+          setGameState((prev) => enterNumber(prev, selectedCell.row, selectedCell.col, num));
           return;
         }
-        
+
         // Letters A-G for 16x16 (10-16)
         if (level.gridSize === 16) {
           const letterCode = e.key.toUpperCase().charCodeAt(0);
           if (letterCode >= 65 && letterCode <= 71) {
             const num = letterCode - 55;
-            setGameState(prev => enterNumber(prev, selectedCell.row, selectedCell.col, num));
+            setGameState((prev) => enterNumber(prev, selectedCell.row, selectedCell.col, num));
             return;
           }
         }
-        
+
         // Delete/Backspace to clear
         if (e.key === 'Delete' || e.key === 'Backspace') {
-          setGameState(prev => clearCell(prev, selectedCell.row, selectedCell.col));
+          setGameState((prev) => clearCell(prev, selectedCell.row, selectedCell.col));
         }
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameState, level.gridSize]);
 
-  const handleCellClick = useCallback((row: number, col: number) => {
-    if (gameState.isComplete) return;
-    setGameState(prev => selectCell(prev, row, col));
-  }, [gameState.isComplete]);
+  const handleCellClick = useCallback(
+    (row: number, col: number) => {
+      if (gameState.isComplete) return;
+      setGameState((prev) => selectCell(prev, row, col));
+    },
+    [gameState.isComplete],
+  );
 
-  const handleNumberClick = useCallback((num: number) => {
-    if (!gameState.selectedCell || gameState.isComplete) return;
-    const { row, col } = gameState.selectedCell;
-    setGameState(prev => enterNumber(prev, row, col, num));
-  }, [gameState.selectedCell, gameState.isComplete]);
+  const handleNumberClick = useCallback(
+    (num: number) => {
+      if (!gameState.selectedCell || gameState.isComplete) return;
+      const { row, col } = gameState.selectedCell;
+      setGameState((prev) => enterNumber(prev, row, col, num));
+    },
+    [gameState.selectedCell, gameState.isComplete],
+  );
 
   const handleClear = useCallback(() => {
     if (!gameState.selectedCell || gameState.isComplete) return;
     const { row, col } = gameState.selectedCell;
-    setGameState(prev => clearCell(prev, row, col));
+    setGameState((prev) => clearCell(prev, row, col));
   }, [gameState.selectedCell, gameState.isComplete]);
 
   const progress = getProgress(gameState);
@@ -136,7 +150,7 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Save & Exit</span>
           </Button>
-          
+
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <Clock className="w-4 h-4" />
@@ -159,10 +173,12 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
         </div>
 
         {/* Game Grid */}
-        <div className={cn(
-          'flex justify-center transition-all duration-700',
-          showCompleted && 'scale-105'
-        )}>
+        <div
+          className={cn(
+            'flex justify-center transition-all duration-700',
+            showCompleted && 'scale-105',
+          )}
+        >
           <SudokuGrid
             cells={gameState.cells}
             selectedCell={gameState.selectedCell}

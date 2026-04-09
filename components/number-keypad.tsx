@@ -18,7 +18,7 @@ export function NumberKeypad({
   disabled = false,
 }: NumberKeypadProps) {
   const numbers = Array.from({ length: gridSize }, (_, i) => i + 1);
-  
+
   // For 16x16, display A-G for 10-16
   const getDisplayValue = (num: number): string => {
     return num > 9 ? String.fromCharCode(55 + num) : num.toString();
@@ -26,7 +26,7 @@ export function NumberKeypad({
 
   return (
     <div className="flex flex-col gap-2">
-      <div 
+      <div
         className="grid gap-1.5"
         style={{
           gridTemplateColumns: gridSize === 9 ? 'repeat(5, 1fr)' : 'repeat(8, 1fr)',
@@ -45,12 +45,7 @@ export function NumberKeypad({
           </Button>
         ))}
       </div>
-      <Button
-        variant="outline"
-        onClick={onClear}
-        disabled={disabled}
-        className="w-full"
-      >
+      <Button variant="outline" onClick={onClear} disabled={disabled} className="w-full">
         <Delete className="w-4 h-4 mr-2" />
         Clear
       </Button>

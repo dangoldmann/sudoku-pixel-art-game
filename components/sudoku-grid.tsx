@@ -27,7 +27,7 @@ export function SudokuGrid({
     if (!selectedCell) return false;
     const sameRow = row === selectedCell.row;
     const sameCol = col === selectedCell.col;
-    const sameBox = 
+    const sameBox =
       Math.floor(row / boxSize) === Math.floor(selectedCell.row / boxSize) &&
       Math.floor(col / boxSize) === Math.floor(selectedCell.col / boxSize);
     return sameRow || sameCol || sameBox;
@@ -53,7 +53,7 @@ export function SudokuGrid({
     <div
       className={cn(
         'grid rounded-xl overflow-hidden transition-all duration-500 bg-background',
-        showCompleted ? 'gap-0 shadow-2xl' : 'gap-1.5 sm:gap-2'
+        showCompleted ? 'gap-0 shadow-2xl' : 'gap-1.5 sm:gap-2',
       )}
       style={{
         gridTemplateColumns: `repeat(${boxCount}, 1fr)`,
@@ -63,13 +63,13 @@ export function SudokuGrid({
       {boxes.map((boxCells, boxIndex) => {
         const boxRow = Math.floor(boxIndex / boxCount);
         const boxCol = boxIndex % boxCount;
-        
+
         return (
           <div
             key={boxIndex}
             className={cn(
               'grid gap-px bg-border rounded-md overflow-hidden transition-all duration-500',
-              showCompleted && 'gap-0 rounded-none'
+              showCompleted && 'gap-0 rounded-none',
             )}
             style={{
               gridTemplateColumns: `repeat(${boxSize}, 1fr)`,
@@ -80,7 +80,7 @@ export function SudokuGrid({
               const localCol = cellIndex % boxSize;
               const globalRow = boxRow * boxSize + localRow;
               const globalCol = boxCol * boxSize + localCol;
-              
+
               return (
                 <SudokuCell
                   key={`${globalRow}-${globalCol}`}

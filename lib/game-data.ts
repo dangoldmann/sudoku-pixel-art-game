@@ -13,7 +13,9 @@ export interface Level {
 
 // Helper to generate a valid Sudoku solution
 function generateSudokuSolution(size: GridSize): number[][] {
-  const grid: number[][] = Array(size).fill(null).map(() => Array(size).fill(0));
+  const grid: number[][] = Array(size)
+    .fill(null)
+    .map(() => Array(size).fill(0));
   const boxSize = size === 9 ? 3 : 4;
 
   function isValid(row: number, col: number, num: number): boolean {
@@ -65,7 +67,9 @@ function shuffle<T>(array: T[]): T[] {
 // Pixel art patterns - each returns a 2D array of hex colors
 const pixelArtPatterns = {
   heart9x9: (): string[][] => {
-    const r = '#EF4444', p = '#EC4899', w = '#FDF2F8', d = '#BE123C';
+    const r = '#EF4444',
+      w = '#FDF2F8',
+      d = '#BE123C';
     return [
       [w, r, r, w, w, w, r, r, w],
       [r, d, r, r, w, r, r, d, r],
@@ -79,7 +83,10 @@ const pixelArtPatterns = {
     ];
   },
   star9x9: (): string[][] => {
-    const y = '#FBBF24', g = '#FDE047', b = '#1E3A5F', d = '#F59E0B';
+    const y = '#FBBF24',
+      g = '#FDE047',
+      b = '#1E3A5F',
+      d = '#F59E0B';
     return [
       [b, b, b, b, y, b, b, b, b],
       [b, b, b, y, g, y, b, b, b],
@@ -93,7 +100,11 @@ const pixelArtPatterns = {
     ];
   },
   mushroom9x9: (): string[][] => {
-    const r = '#DC2626', w = '#FEFCE8', t = '#92400E', b = '#FEF3C7', c = '#B91C1C';
+    const r = '#DC2626',
+      w = '#FEFCE8',
+      t = '#92400E',
+      b = '#FEF3C7',
+      c = '#B91C1C';
     return [
       [b, b, r, r, r, r, r, b, b],
       [b, r, r, w, r, w, r, r, b],
@@ -107,7 +118,11 @@ const pixelArtPatterns = {
     ];
   },
   tree9x9: (): string[][] => {
-    const g = '#22C55E', d = '#15803D', t = '#92400E', s = '#E0F2FE', l = '#86EFAC';
+    const g = '#22C55E',
+      d = '#15803D',
+      t = '#92400E',
+      s = '#E0F2FE',
+      l = '#86EFAC';
     return [
       [s, s, s, s, d, s, s, s, s],
       [s, s, s, d, g, d, s, s, s],
@@ -121,7 +136,10 @@ const pixelArtPatterns = {
     ];
   },
   sun9x9: (): string[][] => {
-    const y = '#FBBF24', o = '#F97316', w = '#FFFBEB', r = '#FDE047';
+    const y = '#FBBF24',
+      o = '#F97316',
+      w = '#FFFBEB',
+      r = '#FDE047';
     return [
       [w, w, y, w, y, w, y, w, w],
       [w, w, w, y, y, y, w, w, w],
@@ -135,7 +153,11 @@ const pixelArtPatterns = {
     ];
   },
   ghost9x9: (): string[][] => {
-    const w = '#F8FAFC', g = '#94A3B8', b = '#1E293B', p = '#E2E8F0', d = '#475569';
+    const w = '#F8FAFC',
+      g = '#94A3B8',
+      b = '#1E293B',
+      p = '#E2E8F0',
+      d = '#475569';
     return [
       [b, b, p, p, p, p, p, b, b],
       [b, p, w, w, w, w, w, p, b],
@@ -149,7 +171,14 @@ const pixelArtPatterns = {
     ];
   },
   flower16x16: (): string[][] => {
-    const p = '#EC4899', r = '#F472B6', y = '#FBBF24', g = '#22C55E', l = '#86EFAC', w = '#FDF4FF', d = '#BE185D', s = '#15803D';
+    const p = '#EC4899',
+      r = '#F472B6',
+      y = '#FBBF24',
+      g = '#22C55E',
+      l = '#86EFAC',
+      w = '#FDF4FF',
+      d = '#BE185D',
+      s = '#15803D';
     const row = (colors: string[]) => colors;
     return [
       row([w, w, w, w, w, p, p, w, w, p, p, w, w, w, w, w]),
@@ -171,7 +200,13 @@ const pixelArtPatterns = {
     ];
   },
   rocket16x16: (): string[][] => {
-    const w = '#F8FAFC', r = '#EF4444', b = '#3B82F6', g = '#94A3B8', d = '#1E293B', o = '#F97316', y = '#FBBF24', s = '#0F172A';
+    const w = '#F8FAFC',
+      r = '#EF4444',
+      b = '#3B82F6',
+      g = '#94A3B8',
+      o = '#F97316',
+      y = '#FBBF24',
+      s = '#0F172A';
     const row = (colors: string[]) => colors;
     return [
       row([s, s, s, s, s, s, s, w, w, s, s, s, s, s, s, s]),
@@ -193,7 +228,13 @@ const pixelArtPatterns = {
     ];
   },
   cat16x16: (): string[][] => {
-    const o = '#F97316', b = '#0F172A', w = '#FFF7ED', p = '#FFEDD5', n = '#EC4899', g = '#22C55E', d = '#EA580C';
+    const o = '#F97316',
+      b = '#0F172A',
+      w = '#FFF7ED',
+      p = '#FFEDD5',
+      n = '#EC4899',
+      g = '#22C55E',
+      d = '#EA580C';
     const row = (colors: string[]) => colors;
     return [
       row([w, w, o, o, w, w, w, w, w, w, w, w, o, o, w, w]),
@@ -302,19 +343,19 @@ export const levels: Level[] = [
 ];
 
 export function getLevelsByFilter(gridSize: GridSize, difficulty: Difficulty): Level[] {
-  return levels.filter(l => l.gridSize === gridSize && l.difficulty === difficulty);
+  return levels.filter((l) => l.gridSize === gridSize && l.difficulty === difficulty);
 }
 
 export function getRandomLevel(gridSize: GridSize, difficulty: Difficulty): Level {
   const filtered = getLevelsByFilter(gridSize, difficulty);
   if (filtered.length === 0) {
     // Fallback to any level of matching size
-    const sizeFiltered = levels.filter(l => l.gridSize === gridSize);
+    const sizeFiltered = levels.filter((l) => l.gridSize === gridSize);
     return sizeFiltered[Math.floor(Math.random() * sizeFiltered.length)];
   }
   return filtered[Math.floor(Math.random() * filtered.length)];
 }
 
 export function getLevelById(id: string): Level | undefined {
-  return levels.find(l => l.id === id);
+  return levels.find((l) => l.id === id);
 }

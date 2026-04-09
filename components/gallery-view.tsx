@@ -14,7 +14,7 @@ interface GalleryViewProps {
 }
 
 export function GalleryView({ completedLevels, onBack }: GalleryViewProps) {
-  const completedIds = new Set(completedLevels.map(l => l.levelId));
+  const completedIds = new Set(completedLevels.map((l) => l.levelId));
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6">
@@ -38,9 +38,7 @@ export function GalleryView({ completedLevels, onBack }: GalleryViewProps) {
           <Card className="border-dashed">
             <CardContent className="py-12 text-center">
               <Lock className="w-12 h-12 mx-auto text-muted-foreground/50 mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">
-                No artworks yet
-              </h3>
+              <h3 className="text-lg font-medium text-foreground mb-2">No artworks yet</h3>
               <p className="text-muted-foreground mb-4">
                 Complete puzzles to unlock pixel art for your gallery
               </p>
@@ -57,7 +55,7 @@ export function GalleryView({ completedLevels, onBack }: GalleryViewProps) {
               {completedLevels.map((completion) => {
                 const level = getLevelById(completion.levelId);
                 if (!level) return null;
-                
+
                 return (
                   <Card
                     key={level.id}
@@ -72,9 +70,7 @@ export function GalleryView({ completedLevels, onBack }: GalleryViewProps) {
                         />
                       </div>
                       <div className="p-3 border-t border-border">
-                        <h3 className="font-medium text-foreground text-sm">
-                          {level.name}
-                        </h3>
+                        <h3 className="font-medium text-foreground text-sm">{level.name}</h3>
                         <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
@@ -100,21 +96,16 @@ export function GalleryView({ completedLevels, onBack }: GalleryViewProps) {
             <h2 className="text-lg font-semibold text-muted-foreground">Locked</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {levels
-                .filter(level => !completedIds.has(level.id))
+                .filter((level) => !completedIds.has(level.id))
                 .map((level) => (
-                  <Card
-                    key={level.id}
-                    className="overflow-hidden opacity-60 py-0"
-                  >
+                  <Card key={level.id} className="overflow-hidden opacity-60 py-0">
                     <CardContent className="p-0 px-0">
                       <div className="aspect-square bg-muted/50 flex items-center justify-center relative">
                         <div className="absolute inset-0 bg-gradient-to-br from-muted to-muted/80" />
                         <Lock className="w-8 h-8 text-muted-foreground/50 relative z-10" />
                       </div>
                       <div className="p-3 border-t border-border/50">
-                        <h3 className="font-medium text-muted-foreground text-sm">
-                          ???
-                        </h3>
+                        <h3 className="font-medium text-muted-foreground text-sm">???</h3>
                         <div className="text-xs text-muted-foreground/60 mt-1">
                           {level.gridSize}x{level.gridSize} / {level.difficulty}
                         </div>
