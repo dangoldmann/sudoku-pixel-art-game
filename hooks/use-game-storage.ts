@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { GameState } from '@/lib/sudoku-engine';
-import type { Level } from '@/lib/game-data';
 
 export interface CompletedLevel {
   levelId: string;
@@ -11,19 +9,10 @@ export interface CompletedLevel {
   mistakes: number;
 }
 
-export interface SavedGame {
-  level: Level;
-  gameState: GameState;
-  elapsedTime: number;
-  savedAt: number;
-}
-
 const STORAGE_KEY = 'pixel-sudoku-completed';
-const SAVED_GAME_KEY = 'pixel-sudoku-saved-game';
 
 export function useGameStorage() {
   const [completedLevels, setCompletedLevels] = useState<CompletedLevel[]>([]);
-  const [savedGame, setSavedGame] = useState<SavedGame | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Load from localStorage on mount
@@ -33,12 +22,8 @@ export function useGameStorage() {
       if (stored) {
         setCompletedLevels(JSON.parse(stored));
       }
-      const savedGameData = localStorage.getItem(SAVED_GAME_KEY);
-      if (savedGameData) {
-        setSavedGame(JSON.parse(savedGameData));
-      }
     } catch {
-      console.error('Failed to load data');
+      console.error('Failed to load completed levels');
     }
     setIsLoaded(true);
   }, []);
@@ -89,51 +74,18 @@ export function useGameStorage() {
     return completedLevels.find(l => l.levelId === levelId);
   }, [completedLevels]);
 
-  // Save current game state
-  const saveCurrentGame = useCallback((
-    level: Level,
-    gameState: GameState,
-    elapsedTime: number
-  ) => {
-    // Don't save if game is complete
-    if (gameState.isComplete) {
-      clearSavedGame();
-      return;
-    }
-    
-    const saved: SavedGame = {
-      level,
-      gameState,
-      elapsedTime,
-      savedAt: Date.now(),
-    };
-    localStorage.setItem(SAVED_GAME_KEY, JSON.stringify(saved));
-    setSavedGame(saved);
-  }, []);
-
-  // Clear saved game
-  const clearSavedGame = useCallback(() => {
-    localStorage.removeItem(SAVED_GAME_KEY);
-    setSavedGame(null);
-  }, []);
-
   // Clear all data
   const clearAllData = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(SAVED_GAME_KEY);
     setCompletedLevels([]);
-    setSavedGame(null);
   }, []);
 
   return {
     completedLevels,
-    savedGame,
     isLoaded,
     saveCompletedLevel,
     isLevelCompleted,
     getCompletionData,
-    saveCurrentGame,
-    clearSavedGame,
     clearAllData,
   };
 }

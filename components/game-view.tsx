@@ -21,29 +21,25 @@ import { cn } from '@/lib/utils';
 
 interface GameViewProps {
   level: Level;
-  resumeData?: { gameState: GameState; elapsedTime: number } | null;
-  onBack: (gameState: GameState, elapsedTime: number) => void;
+  onBack: () => void;
   onComplete: (timeElapsed: number, mistakes: number) => void;
 }
 
-export function GameView({ level, resumeData, onBack, onComplete }: GameViewProps) {
-  const [gameState, setGameState] = useState<GameState>(() => 
-    resumeData?.gameState ?? initializeGame(level)
-  );
+export function GameView({ level, onBack, onComplete }: GameViewProps) {
+  const [gameState, setGameState] = useState<GameState>(() => initializeGame(level));
   const [showCompleted, setShowCompleted] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(resumeData?.elapsedTime ?? 0);
-  const [startTime] = useState(() => Date.now() - (resumeData?.elapsedTime ?? 0));
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   // Timer
   useEffect(() => {
     if (gameState.isComplete) return;
     
     const interval = setInterval(() => {
-      setElapsedTime(Date.now() - startTime);
+      setElapsedTime(Date.now() - gameState.startTime);
     }, 1000);
     
     return () => clearInterval(interval);
-  }, [startTime, gameState.isComplete]);
+  }, [gameState.startTime, gameState.isComplete]);
 
   // Handle completion
   useEffect(() => {
@@ -132,9 +128,9 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
       <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <Button variant="ghost" onClick={() => onBack(gameState, elapsedTime)} className="gap-2">
+          <Button variant="ghost" onClick={onBack} className="gap-2">
             <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Save & Exit</span>
+            <span className="hidden sm:inline">Back</span>
           </Button>
           
           <div className="flex items-center gap-4 text-sm">
@@ -196,7 +192,7 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
                   <span className="font-medium">{gameState.mistakes}</span>
                 </div>
               </div>
-              <Button onClick={() => onBack(gameState, elapsedTime)} className="mt-4">
+              <Button onClick={onBack} className="mt-4">
                 Play Another
               </Button>
             </CardContent>
