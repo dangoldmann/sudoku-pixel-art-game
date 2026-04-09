@@ -147,10 +147,10 @@ export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, 
               <div className="flex items-center justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-foreground">
-                    Continue: {savedGame.level.name}
+                    Continue Game
                   </div>
                   <div className="text-xs text-muted-foreground mt-0.5">
-                    {savedGame.level.gridSize}x{savedGame.level.gridSize} - {getProgress(savedGame.gameState)}% complete - {formatTime(savedGame.elapsedTime)}
+                    {savedGame.level.gridSize}x{savedGame.level.gridSize} {savedGame.level.difficulty} - {getProgress(savedGame.gameState)}% complete - {formatTime(savedGame.elapsedTime)}
                   </div>
                 </div>
                 <Button
