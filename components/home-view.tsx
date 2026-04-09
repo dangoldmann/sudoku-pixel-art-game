@@ -56,8 +56,8 @@ export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, 
         </div>
 
         {/* Grid Size Selection */}
-        <Card className="border-border/50 gap-2 py-4">
-          <CardHeader className="pb-0">
+        <Card className="border-border/50">
+          <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Grid Size
             </CardTitle>
@@ -95,7 +95,7 @@ export function HomeView({ onStartGame, onOpenGallery, onResumeGame, savedGame, 
 
         {/* Difficulty Selection */}
         <Card className="border-border/50">
-          <CardHeader className="pb-3">
+          <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Difficulty
             </CardTitle>
