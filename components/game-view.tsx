@@ -142,22 +142,22 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
   const progress = getProgress(gameState);
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6">
-      <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
+    <div className="bg-background min-h-screen p-4 sm:p-6">
+      <div className="mx-auto max-w-2xl space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" onClick={() => onBack(gameState, elapsedTime)} className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="h-4 w-4" />
             <span className="hidden sm:inline">Save & Exit</span>
           </Button>
 
           <div className="flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <Clock className="w-4 h-4" />
+            <div className="text-muted-foreground flex items-center gap-1.5">
+              <Clock className="h-4 w-4" />
               <span className="font-mono">{formatTime(elapsedTime)}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <AlertCircle className="w-4 h-4" />
+            <div className="text-muted-foreground flex items-center gap-1.5">
+              <AlertCircle className="h-4 w-4" />
               <span>{gameState.mistakes} mistakes</span>
             </div>
           </div>
@@ -167,7 +167,7 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Progress</span>
-            <span className="font-medium text-primary">{progress}%</span>
+            <span className="text-primary font-medium">{progress}%</span>
           </div>
           <Progress value={progress} className="h-2" />
         </div>
@@ -191,23 +191,23 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
         {/* Completion overlay */}
         {showCompleted && (
           <Card className="border-primary/50 bg-primary/5">
-            <CardContent className="py-6 text-center space-y-4">
+            <CardContent className="space-y-4 py-6 text-center">
               <div className="flex justify-center gap-2">
-                <Trophy className="w-8 h-8 text-primary" />
-                <Sparkles className="w-8 h-8 text-yellow-500" />
+                <Trophy className="text-primary h-8 w-8" />
+                <Sparkles className="h-8 w-8 text-yellow-500" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-foreground">Puzzle Complete!</h2>
+                <h2 className="text-foreground text-2xl font-bold">Puzzle Complete!</h2>
                 <p className="text-muted-foreground mt-1">
                   You revealed the {level.name} in {formatTime(elapsedTime)}
                 </p>
               </div>
               <div className="flex justify-center gap-4 text-sm">
-                <div className="px-3 py-1.5 rounded-full bg-secondary">
+                <div className="bg-secondary rounded-full px-3 py-1.5">
                   <span className="text-muted-foreground">Time: </span>
                   <span className="font-medium">{formatTime(elapsedTime)}</span>
                 </div>
-                <div className="px-3 py-1.5 rounded-full bg-secondary">
+                <div className="bg-secondary rounded-full px-3 py-1.5">
                   <span className="text-muted-foreground">Mistakes: </span>
                   <span className="font-medium">{gameState.mistakes}</span>
                 </div>
@@ -221,7 +221,7 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
 
         {/* Keypad - hidden when complete */}
         {!showCompleted && (
-          <div className="max-w-sm mx-auto">
+          <div className="mx-auto max-w-sm">
             <NumberKeypad
               gridSize={level.gridSize}
               onNumberClick={handleNumberClick}
@@ -233,7 +233,7 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
 
         {/* Instructions */}
         {!showCompleted && (
-          <p className="text-center text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-center text-xs">
             Click a cell and enter a number. Use arrow keys to navigate.
           </p>
         )}

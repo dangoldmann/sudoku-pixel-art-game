@@ -13,7 +13,7 @@ export function PixelArtPreview({ colors, gridSize, size = 120 }: PixelArtPrevie
 
   return (
     <div
-      className="rounded-lg overflow-hidden shadow-lg"
+      className="overflow-hidden rounded-lg shadow-lg"
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${gridSize}, ${cellSize}px)`,

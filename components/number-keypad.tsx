@@ -39,14 +39,14 @@ export function NumberKeypad({
             size="sm"
             onClick={() => onNumberClick(num)}
             disabled={disabled}
-            className="aspect-square text-sm sm:text-base font-semibold h-auto py-2"
+            className="aspect-square h-auto py-2 text-sm font-semibold sm:text-base"
           >
             {getDisplayValue(num)}
           </Button>
         ))}
       </div>
       <Button variant="outline" onClick={onClear} disabled={disabled} className="w-full">
-        <Delete className="w-4 h-4 mr-2" />
+        <Delete className="mr-2 h-4 w-4" />
         Clear
       </Button>
     </div>

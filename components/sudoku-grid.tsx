@@ -52,7 +52,7 @@ export function SudokuGrid({
   return (
     <div
       className={cn(
-        'grid rounded-xl overflow-hidden transition-all duration-500 bg-background',
+        'bg-background grid overflow-hidden rounded-xl transition-all duration-500',
         showCompleted ? 'gap-0 shadow-2xl' : 'gap-1.5 sm:gap-2',
       )}
       style={{
@@ -68,7 +68,7 @@ export function SudokuGrid({
           <div
             key={boxIndex}
             className={cn(
-              'grid gap-px bg-border rounded-md overflow-hidden transition-all duration-500',
+              'bg-border grid gap-px overflow-hidden rounded-md transition-all duration-500',
               showCompleted && 'gap-0 rounded-none',
             )}
             style={{

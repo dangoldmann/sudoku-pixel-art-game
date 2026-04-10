@@ -81,8 +81,8 @@ export function SudokuApp() {
   // Show loading state while localStorage is being read
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      <div className="bg-background flex min-h-screen items-center justify-center">
+        <div className="text-muted-foreground animate-pulse">Loading...</div>
       </div>
     );
   }

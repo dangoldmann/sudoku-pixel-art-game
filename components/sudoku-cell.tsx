@@ -45,11 +45,11 @@ export const SudokuCell = memo(function SudokuCell({
         'relative flex items-center justify-center transition-all duration-300 ease-out',
         'font-semibold select-none focus:outline-none',
         gridSize === 9 ? 'text-lg sm:text-xl' : 'text-xs sm:text-sm',
-        isSelected && !showCompleted && 'ring-2 ring-primary ring-inset z-10',
+        isSelected && !showCompleted && 'ring-primary z-10 ring-2 ring-inset',
         isHighlighted && !isSelected && !showCompleted && 'bg-primary/10',
         cell.isIncorrect && 'animate-shake',
-        isRightBorder && !showCompleted && 'border-r-2 border-r-primary/30',
-        isBottomBorder && !showCompleted && 'border-b-2 border-b-primary/30',
+        isRightBorder && !showCompleted && 'border-r-primary/30 border-r-2',
+        isBottomBorder && !showCompleted && 'border-b-primary/30 border-b-2',
         showCompleted && 'border-0',
       )}
       style={{
