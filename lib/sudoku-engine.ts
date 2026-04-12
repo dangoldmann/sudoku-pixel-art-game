@@ -74,6 +74,7 @@ export function enterNumber(state: GameState, row: number, col: number, value: n
 
   const newCells = state.cells.map((r) => r.map((c) => ({ ...c })));
   const targetCell = newCells[row][col];
+  const wasSameIncorrectValue = cell.isIncorrect && cell.value === value;
 
   if (value === cell.solution) {
     targetCell.value = value;
@@ -91,7 +92,8 @@ export function enterNumber(state: GameState, row: number, col: number, value: n
   return {
     ...state,
     cells: newCells,
-    mistakes: targetCell.isIncorrect ? state.mistakes + 1 : state.mistakes,
+    mistakes:
+      targetCell.isIncorrect && !wasSameIncorrectValue ? state.mistakes + 1 : state.mistakes,
     isComplete,
   };
 }
