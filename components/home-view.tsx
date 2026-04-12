@@ -28,6 +28,39 @@ const difficulties: { value: Difficulty; label: string; description: string }[] 
   { value: 'hard', label: 'Hard', description: '35% pre-filled' },
 ];
 
+const difficultyStyles: Record<
+  Difficulty,
+  {
+    card: string;
+    selectedCard: string;
+    label: string;
+    selectedDot: string;
+    dot: string;
+  }
+> = {
+  easy: {
+    card: 'border-emerald-300 bg-emerald-100/60 hover:border-emerald-400',
+    selectedCard: 'border-emerald-500 bg-emerald-100/70',
+    label: 'text-emerald-800',
+    selectedDot: 'border-emerald-600 bg-emerald-600',
+    dot: 'border-emerald-500/70',
+  },
+  medium: {
+    card: 'border-amber-300 bg-amber-100/60 hover:border-amber-400',
+    selectedCard: 'border-amber-500 bg-amber-100/70',
+    label: 'text-amber-800',
+    selectedDot: 'border-amber-600 bg-amber-600',
+    dot: 'border-amber-500/70',
+  },
+  hard: {
+    card: 'border-red-300 bg-red-100/60 hover:border-red-400',
+    selectedCard: 'border-red-500 bg-red-100/70',
+    label: 'text-red-800',
+    selectedDot: 'border-red-600 bg-red-600',
+    dot: 'border-red-500/70',
+  },
+};
+
 export function HomeView({
   onStartGame,
   onOpenGallery,
@@ -107,18 +140,16 @@ export function HomeView({
               <Card
                 key={value}
                 className={cn(
-                  'hover:border-primary/50 cursor-pointer py-0 transition-all duration-200',
-                  selectedDifficulty === value ? 'border-primary bg-primary/5' : 'border-border',
+                  'cursor-pointer py-0 transition-all duration-200',
+                  difficultyStyles[value].card,
+                  selectedDifficulty === value && difficultyStyles[value].selectedCard,
                 )}
                 onClick={() => setSelectedDifficulty(value)}
               >
                 <CardContent className="flex items-center justify-between p-4 px-4">
                   <div>
                     <div
-                      className={cn(
-                        'font-medium transition-colors',
-                        selectedDifficulty === value ? 'text-foreground' : 'text-muted-foreground',
-                      )}
+                      className={cn('font-medium transition-colors', difficultyStyles[value].label)}
                     >
                       {label}
                     </div>
@@ -128,8 +159,8 @@ export function HomeView({
                     className={cn(
                       'h-4 w-4 rounded-full border-2 transition-all',
                       selectedDifficulty === value
-                        ? 'border-primary bg-primary'
-                        : 'border-muted-foreground',
+                        ? difficultyStyles[value].selectedDot
+                        : difficultyStyles[value].dot,
                     )}
                   >
                     {selectedDifficulty === value && (
