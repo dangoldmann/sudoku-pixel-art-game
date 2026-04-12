@@ -21,11 +21,6 @@ export function NumberKeypad({
 }: NumberKeypadProps) {
   const numbers = Array.from({ length: gridSize }, (_, i) => i + 1);
 
-  // For 16x16, display A-G for 10-16
-  const getDisplayValue = (num: number): string => {
-    return num > 9 ? String.fromCharCode(55 + num) : num.toString();
-  };
-
   return (
     <div className="w-full">
       <div className="overflow-x-auto pb-1">
@@ -39,7 +34,7 @@ export function NumberKeypad({
               disabled={disabled || completedNumbers?.has(num)}
               className="h-11 w-11 shrink-0 text-sm font-semibold sm:h-12 sm:w-12 sm:text-base"
             >
-              {getDisplayValue(num)}
+              {num}
             </Button>
           ))}
           <Button

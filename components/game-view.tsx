@@ -34,6 +34,8 @@ interface GameViewProps {
   onComplete: (timeElapsed: number, mistakes: number) => void;
 }
 
+const MULTI_DIGIT_INPUT_WINDOW_MS = 200;
+
 export function GameView({ level, resumeData, onBack, onComplete }: GameViewProps) {
   const [gameState, setGameState] = useState<GameState>(
     () => resumeData?.gameState ?? initializeGame(level),
@@ -49,6 +51,8 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
     null,
   );
   const blockedInputTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingOneTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingOneTimestampRef = useRef<number | null>(null);
 
   const completedNumbers = useMemo(() => {
     const counts = new Map<number, number>();
@@ -83,6 +87,14 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
     });
   }, []);
 
+  const clearPendingOneInput = useCallback(() => {
+    if (pendingOneTimeoutRef.current) {
+      clearTimeout(pendingOneTimeoutRef.current);
+      pendingOneTimeoutRef.current = null;
+    }
+    pendingOneTimestampRef.current = null;
+  }, []);
+
   // Timer
   useEffect(() => {
     if (gameState.isComplete || isPaused) return;
@@ -109,8 +121,9 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
       if (blockedInputTimeoutRef.current) {
         clearTimeout(blockedInputTimeoutRef.current);
       }
+      clearPendingOneInput();
     };
-  }, []);
+  }, [clearPendingOneInput]);
 
   // Keyboard controls
   useEffect(() => {
@@ -122,6 +135,7 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
       // Arrow keys for navigation
       if (selectedCell && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
         e.preventDefault();
+        clearPendingOneInput();
         let newRow = selectedCell.row;
         let newCol = selectedCell.col;
 
@@ -146,42 +160,115 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
 
       // Number input
       if (selectedCell) {
-        const num = parseInt(e.key);
-        if (!isNaN(num) && num >= 1 && num <= level.gridSize) {
+        const commitNumber = (num: number) => {
           if (completedNumbers.has(num)) {
             triggerBlockedInputFeedback(selectedCell.row, selectedCell.col);
             return;
           }
           setGameState((prev) => enterNumber(prev, selectedCell.row, selectedCell.col, num));
+        };
+
+        const commitPendingOne = () => {
+          if (pendingOneTimestampRef.current === null) return;
+          clearPendingOneInput();
+          commitNumber(1);
+        };
+
+        const startPendingOne = () => {
+          clearPendingOneInput();
+          pendingOneTimestampRef.current = Date.now();
+          pendingOneTimeoutRef.current = setTimeout(() => {
+            if (pendingOneTimestampRef.current !== null) {
+              commitPendingOne();
+            }
+          }, MULTI_DIGIT_INPUT_WINDOW_MS);
+        };
+
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          clearPendingOneInput();
+          setGameState((prev) => clearCell(prev, selectedCell.row, selectedCell.col));
+          return;
+        }
+
+        if (level.gridSize === 16 && /^\d$/.test(e.key)) {
+          const keyDigit = Number(e.key);
+          const hasPendingOne = pendingOneTimestampRef.current !== null;
+          const pendingIsFresh =
+            hasPendingOne &&
+            Date.now() - pendingOneTimestampRef.current <= MULTI_DIGIT_INPUT_WINDOW_MS;
+
+          if (pendingIsFresh) {
+            const combined = Number(`1${e.key}`);
+            if (combined >= 10 && combined <= 16) {
+              clearPendingOneInput();
+              commitNumber(combined);
+              return;
+            }
+
+            commitPendingOne();
+
+            if (keyDigit >= 2 && keyDigit <= 9) {
+              commitNumber(keyDigit);
+            } else if (keyDigit === 1) {
+              startPendingOne();
+            }
+            return;
+          }
+
+          if (hasPendingOne) {
+            clearPendingOneInput();
+          }
+
+          if (keyDigit === 1) {
+            startPendingOne();
+            return;
+          }
+
+          if (keyDigit >= 2 && keyDigit <= 9) {
+            commitNumber(keyDigit);
+            return;
+          }
+
+          return;
+        }
+
+        const num = parseInt(e.key);
+        if (!isNaN(num) && num >= 1 && num <= level.gridSize) {
+          clearPendingOneInput();
+          commitNumber(num);
           return;
         }
 
         // Letters A-G for 16x16 (10-16)
         if (level.gridSize === 16) {
+          clearPendingOneInput();
           const letterCode = e.key.toUpperCase().charCodeAt(0);
           if (letterCode >= 65 && letterCode <= 71) {
             const num = letterCode - 55;
-            if (completedNumbers.has(num)) {
-              triggerBlockedInputFeedback(selectedCell.row, selectedCell.col);
-              return;
-            }
-            setGameState((prev) => enterNumber(prev, selectedCell.row, selectedCell.col, num));
+            commitNumber(num);
             return;
           }
-        }
-
-        // Delete/Backspace to clear
-        if (e.key === 'Delete' || e.key === 'Backspace') {
-          setGameState((prev) => clearCell(prev, selectedCell.row, selectedCell.col));
         }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState, level.gridSize, isPaused, completedNumbers, triggerBlockedInputFeedback]);
+  }, [
+    gameState,
+    level.gridSize,
+    isPaused,
+    completedNumbers,
+    triggerBlockedInputFeedback,
+    clearPendingOneInput,
+  ]);
+
+  useEffect(() => {
+    clearPendingOneInput();
+  }, [gameState.selectedCell, clearPendingOneInput]);
 
   const resumeGame = useCallback(() => {
+    clearPendingOneInput();
     setIsPauseModalOpen(false);
     setIsPaused((prev) => {
       if (!prev) return prev;
@@ -193,15 +280,16 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
       }
       return null;
     });
-  }, []);
+  }, [clearPendingOneInput]);
 
   const pauseGame = useCallback(() => {
     if (gameState.isComplete || isPaused) return;
+    clearPendingOneInput();
     setElapsedTime(Date.now() - startTime - totalPausedTime);
     setPauseStartedAt(Date.now());
     setIsPaused(true);
     setIsPauseModalOpen(true);
-  }, [gameState.isComplete, isPaused, startTime, totalPausedTime]);
+  }, [gameState.isComplete, isPaused, startTime, totalPausedTime, clearPendingOneInput]);
 
   const handlePauseModalChange = useCallback(
     (open: boolean) => {
@@ -217,14 +305,16 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
   const handleCellClick = useCallback(
     (row: number, col: number) => {
       if (gameState.isComplete || isPaused) return;
+      clearPendingOneInput();
       setGameState((prev) => selectCell(prev, row, col));
     },
-    [gameState.isComplete, isPaused],
+    [gameState.isComplete, isPaused, clearPendingOneInput],
   );
 
   const handleNumberClick = useCallback(
     (num: number) => {
       if (!gameState.selectedCell || gameState.isComplete || isPaused) return;
+      clearPendingOneInput();
       const { row, col } = gameState.selectedCell;
       if (completedNumbers.has(num)) {
         triggerBlockedInputFeedback(row, col);
@@ -232,14 +322,22 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
       }
       setGameState((prev) => enterNumber(prev, row, col, num));
     },
-    [gameState.selectedCell, gameState.isComplete, isPaused, completedNumbers, triggerBlockedInputFeedback],
+    [
+      gameState.selectedCell,
+      gameState.isComplete,
+      isPaused,
+      completedNumbers,
+      triggerBlockedInputFeedback,
+      clearPendingOneInput,
+    ],
   );
 
   const handleClear = useCallback(() => {
     if (!gameState.selectedCell || gameState.isComplete || isPaused) return;
+    clearPendingOneInput();
     const { row, col } = gameState.selectedCell;
     setGameState((prev) => clearCell(prev, row, col));
-  }, [gameState.selectedCell, gameState.isComplete, isPaused]);
+  }, [gameState.selectedCell, gameState.isComplete, isPaused, clearPendingOneInput]);
 
   const progress = getProgress(gameState);
   const formattedDifficulty = level.difficulty.charAt(0).toUpperCase() + level.difficulty.slice(1);

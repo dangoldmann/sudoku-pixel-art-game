@@ -34,18 +34,12 @@ export const SudokuCell = memo(function SudokuCell({
   const textColor = showColor ? getContrastColor(cell.color) : '#e5e7eb';
   const selectionRingColor = getContrastColor(bgColor);
 
-  // For 16x16, use hex digits A-G for 10-16
-  const displayValue = cell.value
-    ? cell.value > 9
-      ? String.fromCharCode(55 + cell.value)
-      : cell.value.toString()
-    : '';
+  const displayValue = cell.value ? cell.value.toString() : '';
 
   const cellStyle: CSSProperties & { '--tw-ring-color'?: string } = {
     backgroundColor: bgColor,
     color: showCompleted ? 'transparent' : textColor,
-    textShadow:
-      showColor && !showCompleted ? `0 1px 2px ${getContrastColor(textColor)}40` : 'none',
+    textShadow: showColor && !showCompleted ? `0 1px 2px ${getContrastColor(textColor)}40` : 'none',
     aspectRatio: '1',
     '--tw-ring-color': selectionRingColor,
   };
