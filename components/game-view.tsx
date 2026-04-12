@@ -1,9 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { SudokuGrid } from './sudoku-grid';
 import { NumberKeypad } from './number-keypad';
 import type { Level } from '@/lib/game-data';
@@ -16,7 +24,7 @@ import {
   formatTime,
   type GameState,
 } from '@/lib/sudoku-engine';
-import { ArrowLeft, Clock, AlertCircle, Trophy, Sparkles } from 'lucide-react';
+import { ArrowLeft, Clock, AlertCircle, Trophy, Sparkles, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface GameViewProps {
@@ -33,17 +41,58 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
   const [showCompleted, setShowCompleted] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(resumeData?.elapsedTime ?? 0);
   const [startTime] = useState(() => Date.now() - (resumeData?.elapsedTime ?? 0));
+  const [isPaused, setIsPaused] = useState(false);
+  const [, setPauseStartedAt] = useState<number | null>(null);
+  const [totalPausedTime, setTotalPausedTime] = useState(0);
+  const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
+  const [blockedInputCell, setBlockedInputCell] = useState<{ row: number; col: number } | null>(
+    null,
+  );
+  const blockedInputTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const completedNumbers = useMemo(() => {
+    const counts = new Map<number, number>();
+
+    for (const row of gameState.cells) {
+      for (const cell of row) {
+        if (cell.isCorrect && cell.value !== null) {
+          counts.set(cell.value, (counts.get(cell.value) ?? 0) + 1);
+        }
+      }
+    }
+
+    return new Set(
+      Array.from({ length: level.gridSize }, (_, i) => i + 1).filter(
+        (num) => (counts.get(num) ?? 0) >= level.gridSize,
+      ),
+    );
+  }, [gameState.cells, level.gridSize]);
+
+  const triggerBlockedInputFeedback = useCallback((row: number, col: number) => {
+    if (blockedInputTimeoutRef.current) {
+      clearTimeout(blockedInputTimeoutRef.current);
+    }
+
+    setBlockedInputCell(null);
+    requestAnimationFrame(() => {
+      setBlockedInputCell({ row, col });
+      blockedInputTimeoutRef.current = setTimeout(() => {
+        setBlockedInputCell(null);
+        blockedInputTimeoutRef.current = null;
+      }, 240);
+    });
+  }, []);
 
   // Timer
   useEffect(() => {
-    if (gameState.isComplete) return;
+    if (gameState.isComplete || isPaused) return;
 
     const interval = setInterval(() => {
-      setElapsedTime(Date.now() - startTime);
+      setElapsedTime(Date.now() - startTime - totalPausedTime);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [startTime, gameState.isComplete]);
+  }, [startTime, totalPausedTime, gameState.isComplete, isPaused]);
 
   // Handle completion
   useEffect(() => {
@@ -55,10 +104,18 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
     }
   }, [gameState.isComplete, showCompleted, elapsedTime, gameState.mistakes, onComplete]);
 
+  useEffect(() => {
+    return () => {
+      if (blockedInputTimeoutRef.current) {
+        clearTimeout(blockedInputTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (gameState.isComplete) return;
+      if (gameState.isComplete || isPaused) return;
 
       const { selectedCell } = gameState;
 
@@ -91,6 +148,10 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
       if (selectedCell) {
         const num = parseInt(e.key);
         if (!isNaN(num) && num >= 1 && num <= level.gridSize) {
+          if (completedNumbers.has(num)) {
+            triggerBlockedInputFeedback(selectedCell.row, selectedCell.col);
+            return;
+          }
           setGameState((prev) => enterNumber(prev, selectedCell.row, selectedCell.col, num));
           return;
         }
@@ -100,6 +161,10 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
           const letterCode = e.key.toUpperCase().charCodeAt(0);
           if (letterCode >= 65 && letterCode <= 71) {
             const num = letterCode - 55;
+            if (completedNumbers.has(num)) {
+              triggerBlockedInputFeedback(selectedCell.row, selectedCell.col);
+              return;
+            }
             setGameState((prev) => enterNumber(prev, selectedCell.row, selectedCell.col, num));
             return;
           }
@@ -114,32 +179,70 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState, level.gridSize]);
+  }, [gameState, level.gridSize, isPaused, completedNumbers, triggerBlockedInputFeedback]);
+
+  const resumeGame = useCallback(() => {
+    setIsPauseModalOpen(false);
+    setIsPaused((prev) => {
+      if (!prev) return prev;
+      return false;
+    });
+    setPauseStartedAt((prev) => {
+      if (prev !== null) {
+        setTotalPausedTime((current) => current + (Date.now() - prev));
+      }
+      return null;
+    });
+  }, []);
+
+  const pauseGame = useCallback(() => {
+    if (gameState.isComplete || isPaused) return;
+    setElapsedTime(Date.now() - startTime - totalPausedTime);
+    setPauseStartedAt(Date.now());
+    setIsPaused(true);
+    setIsPauseModalOpen(true);
+  }, [gameState.isComplete, isPaused, startTime, totalPausedTime]);
+
+  const handlePauseModalChange = useCallback(
+    (open: boolean) => {
+      if (open) {
+        setIsPauseModalOpen(true);
+        return;
+      }
+      resumeGame();
+    },
+    [resumeGame],
+  );
 
   const handleCellClick = useCallback(
     (row: number, col: number) => {
-      if (gameState.isComplete) return;
+      if (gameState.isComplete || isPaused) return;
       setGameState((prev) => selectCell(prev, row, col));
     },
-    [gameState.isComplete],
+    [gameState.isComplete, isPaused],
   );
 
   const handleNumberClick = useCallback(
     (num: number) => {
-      if (!gameState.selectedCell || gameState.isComplete) return;
+      if (!gameState.selectedCell || gameState.isComplete || isPaused) return;
       const { row, col } = gameState.selectedCell;
+      if (completedNumbers.has(num)) {
+        triggerBlockedInputFeedback(row, col);
+        return;
+      }
       setGameState((prev) => enterNumber(prev, row, col, num));
     },
-    [gameState.selectedCell, gameState.isComplete],
+    [gameState.selectedCell, gameState.isComplete, isPaused, completedNumbers, triggerBlockedInputFeedback],
   );
 
   const handleClear = useCallback(() => {
-    if (!gameState.selectedCell || gameState.isComplete) return;
+    if (!gameState.selectedCell || gameState.isComplete || isPaused) return;
     const { row, col } = gameState.selectedCell;
     setGameState((prev) => clearCell(prev, row, col));
-  }, [gameState.selectedCell, gameState.isComplete]);
+  }, [gameState.selectedCell, gameState.isComplete, isPaused]);
 
   const progress = getProgress(gameState);
+  const formattedDifficulty = level.difficulty.charAt(0).toUpperCase() + level.difficulty.slice(1);
 
   return (
     <div className="bg-background min-h-screen p-4 sm:p-6">
@@ -151,11 +254,22 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
             <span className="hidden sm:inline">Save & Exit</span>
           </Button>
 
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-3 text-sm sm:gap-4">
             <div className="text-muted-foreground flex items-center gap-1.5">
               <Clock className="h-4 w-4" />
               <span className="font-mono">{formatTime(elapsedTime)}</span>
             </div>
+            {!showCompleted && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={pauseGame}
+                aria-label="Pause game"
+                className="text-muted-foreground h-8 w-8"
+              >
+                <Pause className="h-4 w-4" />
+              </Button>
+            )}
             <div className="text-muted-foreground flex items-center gap-1.5">
               <AlertCircle className="h-4 w-4" />
               <span>{gameState.mistakes} mistakes</span>
@@ -182,6 +296,7 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
           <SudokuGrid
             cells={gameState.cells}
             selectedCell={gameState.selectedCell}
+            blockedInputCell={blockedInputCell}
             gridSize={level.gridSize}
             showCompleted={showCompleted}
             onCellClick={handleCellClick}
@@ -221,12 +336,13 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
 
         {/* Keypad - hidden when complete */}
         {!showCompleted && (
-          <div className="mx-auto max-w-sm">
+          <div className="mx-auto w-full max-w-2xl">
             <NumberKeypad
               gridSize={level.gridSize}
               onNumberClick={handleNumberClick}
               onClear={handleClear}
-              disabled={!gameState.selectedCell}
+              completedNumbers={completedNumbers}
+              disabled={!gameState.selectedCell || isPaused}
             />
           </div>
         )}
@@ -238,6 +354,44 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
           </p>
         )}
       </div>
+
+      <Dialog open={isPauseModalOpen} onOpenChange={handlePauseModalChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Game Paused</DialogTitle>
+            <DialogDescription>
+              Your timer is paused. Resume whenever you are ready.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="bg-muted rounded-md p-3">
+              <div className="text-muted-foreground text-xs">Time</div>
+              <div className="mt-1 font-mono font-semibold">{formatTime(elapsedTime)}</div>
+            </div>
+            <div className="bg-muted rounded-md p-3">
+              <div className="text-muted-foreground text-xs">Mistakes</div>
+              <div className="mt-1 font-semibold">{gameState.mistakes}</div>
+            </div>
+            <div className="bg-muted rounded-md p-3">
+              <div className="text-muted-foreground text-xs">Difficulty</div>
+              <div className="mt-1 font-semibold">{formattedDifficulty}</div>
+            </div>
+            <div className="bg-muted rounded-md p-3">
+              <div className="text-muted-foreground text-xs">Grid Size</div>
+              <div className="mt-1 font-semibold">
+                {level.gridSize} x {level.gridSize}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button onClick={resumeGame} className="w-full sm:w-auto">
+              Resume Game
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

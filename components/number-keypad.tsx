@@ -8,6 +8,7 @@ interface NumberKeypadProps {
   gridSize: GridSize;
   onNumberClick: (num: number) => void;
   onClear: () => void;
+  completedNumbers?: Set<number>;
   disabled?: boolean;
 }
 
@@ -15,6 +16,7 @@ export function NumberKeypad({
   gridSize,
   onNumberClick,
   onClear,
+  completedNumbers,
   disabled = false,
 }: NumberKeypadProps) {
   const numbers = Array.from({ length: gridSize }, (_, i) => i + 1);
@@ -25,30 +27,32 @@ export function NumberKeypad({
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <div
-        className="grid gap-1.5"
-        style={{
-          gridTemplateColumns: gridSize === 9 ? 'repeat(5, 1fr)' : 'repeat(8, 1fr)',
-        }}
-      >
-        {numbers.map((num) => (
+    <div className="w-full">
+      <div className="overflow-x-auto pb-1">
+        <div className="mx-auto flex w-fit min-w-max items-center justify-center gap-1.5">
+          {numbers.map((num) => (
+            <Button
+              key={num}
+              variant="secondary"
+              size="sm"
+              onClick={() => onNumberClick(num)}
+              disabled={disabled || completedNumbers?.has(num)}
+              className="h-11 w-11 shrink-0 text-sm font-semibold sm:h-12 sm:w-12 sm:text-base"
+            >
+              {getDisplayValue(num)}
+            </Button>
+          ))}
           <Button
-            key={num}
-            variant="secondary"
-            size="sm"
-            onClick={() => onNumberClick(num)}
+            variant="outline"
+            onClick={onClear}
             disabled={disabled}
-            className="aspect-square h-auto py-2 text-sm font-semibold sm:text-base"
+            className="h-11 shrink-0 gap-1.5 px-3 text-sm font-semibold sm:h-12 sm:px-4 sm:text-base"
           >
-            {getDisplayValue(num)}
+            <Delete className="h-4 w-4" />
+            <span>Clear</span>
           </Button>
-        ))}
+        </div>
       </div>
-      <Button variant="outline" onClick={onClear} disabled={disabled} className="w-full">
-        <Delete className="mr-2 h-4 w-4" />
-        Clear
-      </Button>
     </div>
   );
 }

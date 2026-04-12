@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 interface SudokuGridProps {
   cells: CellState[][];
   selectedCell: { row: number; col: number } | null;
+  blockedInputCell: { row: number; col: number } | null;
   gridSize: GridSize;
   showCompleted: boolean;
   onCellClick: (row: number, col: number) => void;
@@ -16,6 +17,7 @@ interface SudokuGridProps {
 export function SudokuGrid({
   cells,
   selectedCell,
+  blockedInputCell,
   gridSize,
   showCompleted,
   onCellClick,
@@ -52,8 +54,8 @@ export function SudokuGrid({
   return (
     <div
       className={cn(
-        'bg-background grid overflow-hidden rounded-xl transition-all duration-500',
-        showCompleted ? 'gap-0 shadow-2xl' : 'gap-1.5 sm:gap-2',
+        'grid overflow-hidden rounded-2xl bg-[#bcc7dc] p-1.5 shadow-[0_18px_40px_-26px_rgba(15,23,42,0.85)] transition-all duration-500 sm:p-2',
+        showCompleted ? 'gap-0 p-0 shadow-2xl' : 'gap-1.5 sm:gap-2',
       )}
       style={{
         gridTemplateColumns: `repeat(${boxCount}, 1fr)`,
@@ -68,8 +70,8 @@ export function SudokuGrid({
           <div
             key={boxIndex}
             className={cn(
-              'bg-border grid gap-px overflow-hidden rounded-md transition-all duration-500',
-              showCompleted && 'gap-0 rounded-none',
+              'grid gap-px overflow-hidden rounded-lg bg-[#8d9bb7] p-px transition-all duration-500',
+              showCompleted && 'gap-0 rounded-none p-0',
             )}
             style={{
               gridTemplateColumns: `repeat(${boxSize}, 1fr)`,
@@ -86,6 +88,9 @@ export function SudokuGrid({
                   key={`${globalRow}-${globalCol}`}
                   cell={cell}
                   isSelected={selectedCell?.row === globalRow && selectedCell?.col === globalCol}
+                  isBlockedInput={
+                    blockedInputCell?.row === globalRow && blockedInputCell?.col === globalCol
+                  }
                   isHighlighted={isHighlighted(globalRow, globalCol)}
                   gridSize={gridSize}
                   showCompleted={showCompleted}
