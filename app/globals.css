@@ -150,3 +150,30 @@
 .animate-blocked-input {
   animation: blocked-input 220ms ease-out;
 }
+
+@keyframes incorrect-input {
+  0% {
+    transform: translateX(0) scale(1);
+    filter: saturate(1) brightness(1);
+  }
+  20% {
+    transform: translateX(-2px) scale(0.99);
+    filter: saturate(1.18) brightness(1.08);
+  }
+  40% {
+    transform: translateX(2px) scale(0.99);
+    filter: saturate(1.35) brightness(1.16);
+  }
+  65% {
+    transform: translateX(-1px) scale(1);
+    filter: saturate(1.2) brightness(1.1);
+  }
+  100% {
+    transform: translateX(0) scale(1);
+    filter: saturate(1) brightness(1);
+  }
+}
+
+.animate-incorrect-input {
+  animation: incorrect-input 220ms ease-out;
+}
