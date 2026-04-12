@@ -16,6 +16,20 @@ interface SudokuCellProps {
   onClick: () => void;
 }
 
+function getCellCornerRadiusClass(row: number, col: number, gridSize: GridSize): string {
+  const boxSize = gridSize === 9 ? 3 : 4;
+  const rowIndexInBox = row % boxSize;
+  const colIndexInBox = col % boxSize;
+  const lastIndexInBox = boxSize - 1;
+
+  if (rowIndexInBox === 0 && colIndexInBox === 0) return 'rounded-tl-md';
+  if (rowIndexInBox === 0 && colIndexInBox === lastIndexInBox) return 'rounded-tr-md';
+  if (rowIndexInBox === lastIndexInBox && colIndexInBox === 0) return 'rounded-bl-md';
+  if (rowIndexInBox === lastIndexInBox && colIndexInBox === lastIndexInBox) return 'rounded-br-md';
+
+  return '';
+}
+
 export const SudokuCell = memo(function SudokuCell({
   cell,
   isSelected,
@@ -25,18 +39,8 @@ export const SudokuCell = memo(function SudokuCell({
   showCompleted,
   onClick,
 }: SudokuCellProps) {
-  const boxSize = gridSize === 9 ? 3 : 4;
-  const isFirstRowInBox = cell.row % boxSize === 0;
-  const isLastRowInBox = (cell.row + 1) % boxSize === 0;
-  const isFirstColInBox = cell.col % boxSize === 0;
-  const isLastColInBox = (cell.col + 1) % boxSize === 0;
-
-  const isTopLeftCorner = isFirstRowInBox && isFirstColInBox;
-  const isTopRightCorner = isFirstRowInBox && isLastColInBox;
-  const isBottomLeftCorner = isLastRowInBox && isFirstColInBox;
-  const isBottomRightCorner = isLastRowInBox && isLastColInBox;
-
   const isIncorrectInput = cell.isIncorrect && !showCompleted;
+  const cornerRadiusClass = getCellCornerRadiusClass(cell.row, cell.col, gridSize);
 
   const showColor = cell.isCorrect || showCompleted;
   const bgColor = showColor ? cell.color : '#374151';
@@ -72,10 +76,7 @@ export const SudokuCell = memo(function SudokuCell({
         isHighlighted && !isSelected && !showCompleted && 'bg-primary/10',
         isIncorrectInput && 'animate-incorrect-input ring-2 ring-inset',
         isBlockedInput && !showCompleted && 'animate-blocked-input',
-        isTopLeftCorner && !showCompleted && 'rounded-tl-md',
-        isTopRightCorner && !showCompleted && 'rounded-tr-md',
-        isBottomLeftCorner && !showCompleted && 'rounded-bl-md',
-        isBottomRightCorner && !showCompleted && 'rounded-br-md',
+        !showCompleted && cornerRadiusClass,
         showCompleted && 'border-0',
       )}
       style={cellStyle}
