@@ -54,12 +54,12 @@ export function SudokuGrid({
   return (
     <div
       className={cn(
-        'grid overflow-hidden rounded-2xl bg-[#bcc7dc] p-1.5 shadow-[0_18px_40px_-26px_rgba(15,23,42,0.85)] transition-all duration-500 sm:p-2',
+        'grid w-full overflow-hidden rounded-2xl bg-[#bcc7dc] p-1.5 shadow-[0_18px_40px_-26px_rgba(15,23,42,0.85)] transition-all duration-500 sm:p-2',
+        gridSize === 9 ? 'max-w-[400px]' : 'max-w-[520px]',
         showCompleted ? 'gap-0 p-0 shadow-2xl' : 'gap-1.5 sm:gap-2',
       )}
       style={{
         gridTemplateColumns: `repeat(${boxCount}, 1fr)`,
-        maxWidth: gridSize === 9 ? '400px' : '520px',
       }}
     >
       {boxes.map((boxCells, boxIndex) => {
