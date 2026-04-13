@@ -27,7 +27,7 @@ export function NumberKeypad({
 }: NumberKeypadProps) {
   const numbers = Array.from({ length: gridSize }, (_, i) => i + 1);
   const isSixteenBySixteen = gridSize === 16;
-  const actionButtonClass = 'h-10 w-10 shrink-0 px-0 sm:h-12 sm:w-12';
+  const actionButtonClass = 'h-11 w-11 shrink-0 px-0 sm:h-12 sm:w-12';
   const numberButtonClass =
     'h-8 w-8 shrink-0 bg-transparent px-0 text-2xl font-semibold hover:bg-transparent sm:h-12 sm:w-12 sm:border sm:bg-secondary sm:text-lg sm:hover:bg-secondary/80';
 
