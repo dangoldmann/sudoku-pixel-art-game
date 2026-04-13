@@ -16,23 +16,8 @@ export const metadata: Metadata = {
   title: 'Pixel Sudoku - Solve Puzzles, Reveal Art',
   description:
     'A unique Sudoku game where solving puzzles reveals hidden pixel art. Features 9x9 and 16x16 grids with multiple difficulty levels.',
-  generator: 'v0.app',
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/icon.svg',
   },
 };
 
