@@ -22,10 +22,7 @@ export function getRevealPercentagesByDifficulty(gridSize: GridSize): Record<Dif
   );
 }
 
-export function getRevealedCellIndices(
-  gridSize: GridSize,
-  revealPercentage: number,
-): Set<number> {
+export function getRevealedCellIndices(gridSize: GridSize, revealPercentage: number): Set<number> {
   const totalCells = gridSize * gridSize;
   const revealCount = Math.round((totalCells * revealPercentage) / 100);
 

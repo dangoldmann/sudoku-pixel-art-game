@@ -53,7 +53,7 @@ export function SudokuBoardPreview({
                     <div
                       key={`${boardKey}-${index}`}
                       className={cn(
-                        'aspect-square rounded-[2px] border border-border/70',
+                        'border-border/70 aspect-square rounded-[2px] border',
                         isRevealed ? style.filled : style.empty,
                       )}
                     />

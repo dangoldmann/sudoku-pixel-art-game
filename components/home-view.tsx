@@ -60,12 +60,7 @@ export function HomeView({
             />
           </div>
         </div>
-
         {savedGame && <ResumeGameCard savedGame={savedGame} onResumeGame={onResumeGame} />}
-
-        <p className="text-muted-foreground text-center text-xs">
-          Each correct number reveals part of a hidden pixel art image
-        </p>
       </div>
     </div>
   );
