@@ -115,6 +115,45 @@ export function clearCell(state: GameState, row: number, col: number): GameState
   };
 }
 
+export function getHintCandidates(state: GameState): { row: number; col: number }[] {
+  const hintCandidates: { row: number; col: number }[] = [];
+
+  for (let row = 0; row < state.cells.length; row++) {
+    for (let col = 0; col < state.cells[row].length; col++) {
+      if (!state.cells[row][col].isCorrect) {
+        hintCandidates.push({ row, col });
+      }
+    }
+  }
+
+  return hintCandidates;
+}
+
+export function revealHintCell(state: GameState, row: number, col: number): GameState {
+  if (state.isComplete) return state;
+
+  const targetSource = state.cells[row]?.[col];
+  if (!targetSource || targetSource.isCorrect) {
+    return state;
+  }
+
+  const newCells = state.cells.map((r) => r.map((c) => ({ ...c })));
+  const targetCell = newCells[row][col];
+
+  targetCell.value = targetCell.solution;
+  targetCell.isCorrect = true;
+  targetCell.isIncorrect = false;
+  targetCell.isRevealed = true;
+
+  const isComplete = newCells.every((r) => r.every((c) => c.isCorrect));
+
+  return {
+    ...state,
+    cells: newCells,
+    isComplete,
+  };
+}
+
 export function selectCell(state: GameState, row: number, col: number): GameState {
   return {
     ...state,

@@ -19,6 +19,8 @@ import {
   initializeGame,
   enterNumber,
   clearCell,
+  getHintCandidates,
+  revealHintCell,
   selectCell,
   getProgress,
   formatTime,
@@ -35,6 +37,7 @@ interface GameViewProps {
 }
 
 const MULTI_DIGIT_INPUT_WINDOW_MS = 200;
+const MAX_HINTS = 3;
 
 export function GameView({ level, resumeData, onBack, onComplete }: GameViewProps) {
   const [gameState, setGameState] = useState<GameState>(
@@ -47,10 +50,13 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
   const [, setPauseStartedAt] = useState<number | null>(null);
   const [totalPausedTime, setTotalPausedTime] = useState(0);
   const [isPauseModalOpen, setIsPauseModalOpen] = useState(false);
+  const [hintsUsed, setHintsUsed] = useState(0);
   const [blockedInputCell, setBlockedInputCell] = useState<{ row: number; col: number } | null>(
     null,
   );
+  const [hintedCell, setHintedCell] = useState<{ row: number; col: number } | null>(null);
   const blockedInputTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hintedCellTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingOneTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingOneTimestampRef = useRef<number | null>(null);
 
@@ -120,6 +126,9 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
     return () => {
       if (blockedInputTimeoutRef.current) {
         clearTimeout(blockedInputTimeoutRef.current);
+      }
+      if (hintedCellTimeoutRef.current) {
+        clearTimeout(hintedCellTimeoutRef.current);
       }
       clearPendingOneInput();
     };
@@ -339,6 +348,30 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
     setGameState((prev) => clearCell(prev, row, col));
   }, [gameState.selectedCell, gameState.isComplete, isPaused, clearPendingOneInput]);
 
+  const canUseHint = !isPaused && !gameState.isComplete && hintsUsed < MAX_HINTS;
+
+  const handleHint = () => {
+    if (!canUseHint) return;
+    clearPendingOneInput();
+
+    const hintCandidates = getHintCandidates(gameState);
+    if (hintCandidates.length === 0) return;
+    const hintedPosition = hintCandidates[Math.floor(Math.random() * hintCandidates.length)];
+
+    setGameState((prev) => revealHintCell(prev, hintedPosition.row, hintedPosition.col));
+    setHintsUsed((prev) => prev + 1);
+    setHintedCell(hintedPosition);
+
+    if (hintedCellTimeoutRef.current) {
+      clearTimeout(hintedCellTimeoutRef.current);
+    }
+
+    hintedCellTimeoutRef.current = setTimeout(() => {
+      setHintedCell(null);
+      hintedCellTimeoutRef.current = null;
+    }, 320);
+  };
+
   const progress = getProgress(gameState);
   const formattedDifficulty = level.difficulty.charAt(0).toUpperCase() + level.difficulty.slice(1);
 
@@ -395,6 +428,7 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
             cells={gameState.cells}
             selectedCell={gameState.selectedCell}
             blockedInputCell={blockedInputCell}
+            hintedCell={hintedCell}
             gridSize={level.gridSize}
             showCompleted={showCompleted}
             onCellClick={handleCellClick}
@@ -439,6 +473,9 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
               gridSize={level.gridSize}
               onNumberClick={handleNumberClick}
               onClear={handleClear}
+              onHint={handleHint}
+              hintsRemaining={MAX_HINTS - hintsUsed}
+              canUseHint={canUseHint}
               completedNumbers={completedNumbers}
               disabled={!gameState.selectedCell || isPaused}
             />

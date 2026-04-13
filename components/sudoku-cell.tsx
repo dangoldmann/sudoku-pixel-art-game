@@ -10,6 +10,7 @@ interface SudokuCellProps {
   cell: CellState;
   isSelected: boolean;
   isBlockedInput: boolean;
+  isHinted: boolean;
   isHighlighted: boolean;
   gridSize: GridSize;
   showCompleted: boolean;
@@ -34,6 +35,7 @@ export const SudokuCell = memo(function SudokuCell({
   cell,
   isSelected,
   isBlockedInput,
+  isHinted,
   isHighlighted,
   gridSize,
   showCompleted,
@@ -76,6 +78,7 @@ export const SudokuCell = memo(function SudokuCell({
         isHighlighted && !isSelected && !showCompleted && 'bg-primary/10',
         isIncorrectInput && 'animate-incorrect-input ring-2 ring-inset',
         isBlockedInput && !showCompleted && 'animate-blocked-input',
+        isHinted && !showCompleted && 'animate-hint-reveal',
         !showCompleted && cornerRadiusClass,
         showCompleted && 'border-0',
       )}

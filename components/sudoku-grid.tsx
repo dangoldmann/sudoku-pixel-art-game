@@ -9,6 +9,7 @@ interface SudokuGridProps {
   cells: CellState[][];
   selectedCell: { row: number; col: number } | null;
   blockedInputCell: { row: number; col: number } | null;
+  hintedCell: { row: number; col: number } | null;
   gridSize: GridSize;
   showCompleted: boolean;
   onCellClick: (row: number, col: number) => void;
@@ -18,6 +19,7 @@ export function SudokuGrid({
   cells,
   selectedCell,
   blockedInputCell,
+  hintedCell,
   gridSize,
   showCompleted,
   onCellClick,
@@ -91,6 +93,7 @@ export function SudokuGrid({
                   isBlockedInput={
                     blockedInputCell?.row === globalRow && blockedInputCell?.col === globalCol
                   }
+                  isHinted={hintedCell?.row === globalRow && hintedCell?.col === globalCol}
                   isHighlighted={isHighlighted(globalRow, globalCol)}
                   gridSize={gridSize}
                   showCompleted={showCompleted}

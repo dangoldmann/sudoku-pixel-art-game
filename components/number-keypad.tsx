@@ -2,12 +2,15 @@
 
 import { Button } from '@/components/ui/button';
 import type { GridSize } from '@/lib/game-data';
-import { Delete } from 'lucide-react';
+import { Delete, Lightbulb } from 'lucide-react';
 
 interface NumberKeypadProps {
   gridSize: GridSize;
   onNumberClick: (num: number) => void;
   onClear: () => void;
+  onHint: () => void;
+  hintsRemaining: number;
+  canUseHint: boolean;
   completedNumbers?: Set<number>;
   disabled?: boolean;
 }
@@ -16,6 +19,9 @@ export function NumberKeypad({
   gridSize,
   onNumberClick,
   onClear,
+  onHint,
+  hintsRemaining,
+  canUseHint,
   completedNumbers,
   disabled = false,
 }: NumberKeypadProps) {
@@ -25,7 +31,11 @@ export function NumberKeypad({
 
   return (
     <div className="w-full">
-      <div className={isSixteenBySixteen ? '' : 'overflow-x-auto pb-1'}>
+      <div
+        className={
+          isSixteenBySixteen ? 'overflow-visible pb-3' : 'overflow-x-auto overflow-y-hidden pb-3'
+        }
+      >
         <div
           className={
             isSixteenBySixteen
@@ -60,14 +70,33 @@ export function NumberKeypad({
             variant="outline"
             onClick={onClear}
             disabled={disabled}
+            aria-label="Clear selected cell"
             className={
               isSixteenBySixteen
-                ? 'col-start-9 row-span-2 row-start-1 h-full gap-1.5 px-3 text-sm font-semibold sm:px-4 sm:text-base'
-                : 'h-11 shrink-0 gap-1.5 px-3 text-sm font-semibold sm:h-12 sm:px-4 sm:text-base'
+                ? `col-start-9 row-start-1 ${numberButtonClass}`
+                : numberButtonClass
             }
           >
             <Delete className="h-4 w-4" />
-            <span>Clear</span>
+          </Button>
+          <Button
+            variant="outline"
+            onClick={onHint}
+            disabled={!canUseHint}
+            className={
+              isSixteenBySixteen
+                ? `relative col-start-9 row-start-2 overflow-visible ${numberButtonClass}`
+                : `relative overflow-visible ${numberButtonClass}`
+            }
+            aria-label={`Use hint (${hintsRemaining} remaining)`}
+          >
+            <Lightbulb className="h-4 w-4" />
+            <span
+              className="pointer-events-none absolute -right-2 -bottom-2 z-10 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[10px] leading-none font-bold text-white"
+              aria-hidden="true"
+            >
+              {hintsRemaining}
+            </span>
           </Button>
         </div>
       </div>
