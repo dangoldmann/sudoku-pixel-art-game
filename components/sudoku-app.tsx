@@ -5,7 +5,12 @@ import { HomeView } from './home-view';
 import { GameView } from './game-view';
 import { GalleryView } from './gallery-view';
 import { useGameStorage, type SavedGame } from '@/hooks/use-game-storage';
-import { getRandomLevel, type Level, type GridSize, type Difficulty } from '@/lib/game-data';
+import {
+  getRandomUncompletedLevel,
+  type Level,
+  type GridSize,
+  type Difficulty,
+} from '@/lib/game-data';
 import type { GameState } from '@/lib/sudoku-engine';
 
 type View = 'home' | 'game' | 'gallery';
@@ -29,12 +34,16 @@ export function SudokuApp() {
   const handleStartGame = useCallback(
     (gridSize: GridSize, difficulty: Difficulty) => {
       clearSavedGame();
-      const level = getRandomLevel(gridSize, difficulty);
+      const level = getRandomUncompletedLevel(
+        gridSize,
+        difficulty,
+        completedLevels.map(({ levelId }) => levelId),
+      );
       setCurrentLevel(level);
       setResumeData(null);
       setView('game');
     },
-    [clearSavedGame],
+    [clearSavedGame, completedLevels],
   );
 
   const handleResumeGame = useCallback((saved: SavedGame) => {
