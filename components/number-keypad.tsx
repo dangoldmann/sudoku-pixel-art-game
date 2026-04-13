@@ -27,7 +27,46 @@ export function NumberKeypad({
 }: NumberKeypadProps) {
   const numbers = Array.from({ length: gridSize }, (_, i) => i + 1);
   const isSixteenBySixteen = gridSize === 16;
-  const numberButtonClass = 'h-11 w-11 shrink-0 text-sm font-semibold sm:h-12 sm:w-12 sm:text-base';
+  const actionButtonClass =
+    'h-9 w-9 shrink-0 px-0 text-sm font-semibold sm:h-12 sm:w-12 sm:text-base';
+  const numberButtonClass =
+    'h-8 w-8 shrink-0 bg-transparent px-0 text-lg font-semibold hover:bg-transparent sm:h-12 sm:w-12 sm:bg-secondary sm:text-base sm:hover:bg-secondary/80';
+
+  const clearButton = (
+    <Button
+      variant="outline"
+      onClick={onClear}
+      disabled={disabled}
+      aria-label="Clear selected cell"
+      className={
+        isSixteenBySixteen ? `col-start-9 row-start-1 ${actionButtonClass}` : actionButtonClass
+      }
+    >
+      <Delete className="h-4 w-4" />
+    </Button>
+  );
+
+  const hintButton = (
+    <Button
+      variant="outline"
+      onClick={onHint}
+      disabled={!canUseHint}
+      className={
+        isSixteenBySixteen
+          ? `relative col-start-9 row-start-2 overflow-visible ${actionButtonClass}`
+          : `relative overflow-visible ${actionButtonClass}`
+      }
+      aria-label={`Use hint (${hintsRemaining} remaining)`}
+    >
+      <Lightbulb className="h-4 w-4" />
+      <span
+        className="pointer-events-none absolute -right-2 -bottom-2 z-10 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[10px] leading-none font-bold text-white"
+        aria-hidden="true"
+      >
+        {hintsRemaining}
+      </span>
+    </Button>
+  );
 
   return (
     <div className="w-full">
@@ -40,15 +79,37 @@ export function NumberKeypad({
           className={
             isSixteenBySixteen
               ? 'mx-auto grid w-fit grid-cols-[repeat(8,auto)_auto] grid-rows-2 items-stretch gap-1.5'
-              : 'mx-auto flex w-fit min-w-max items-center justify-center gap-1.5'
+              : 'mx-auto flex w-fit min-w-max flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-center sm:gap-1.5'
           }
         >
+          {!isSixteenBySixteen ? (
+            <div className="order-1 flex items-center justify-end gap-1 sm:order-2 sm:gap-1.5">
+              {clearButton}
+              {hintButton}
+            </div>
+          ) : null}
+          {!isSixteenBySixteen ? (
+            <div className="order-2 flex items-center gap-1 sm:order-1 sm:gap-1.5">
+              {numbers.map((num) => (
+                <Button
+                  key={num}
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => onNumberClick(num)}
+                  disabled={disabled || completedNumbers?.has(num)}
+                  className={numberButtonClass}
+                >
+                  {num}
+                </Button>
+              ))}
+            </div>
+          ) : null}
           {numbers.map((num) => {
             const isTopRow = num <= 8;
             const colStart = isTopRow ? num : num - 8;
             const rowStart = isTopRow ? 1 : 2;
 
-            return (
+            return isSixteenBySixteen ? (
               <Button
                 key={num}
                 variant="secondary"
@@ -64,40 +125,10 @@ export function NumberKeypad({
               >
                 {num}
               </Button>
-            );
+            ) : null;
           })}
-          <Button
-            variant="outline"
-            onClick={onClear}
-            disabled={disabled}
-            aria-label="Clear selected cell"
-            className={
-              isSixteenBySixteen
-                ? `col-start-9 row-start-1 ${numberButtonClass}`
-                : numberButtonClass
-            }
-          >
-            <Delete className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            onClick={onHint}
-            disabled={!canUseHint}
-            className={
-              isSixteenBySixteen
-                ? `relative col-start-9 row-start-2 overflow-visible ${numberButtonClass}`
-                : `relative overflow-visible ${numberButtonClass}`
-            }
-            aria-label={`Use hint (${hintsRemaining} remaining)`}
-          >
-            <Lightbulb className="h-4 w-4" />
-            <span
-              className="pointer-events-none absolute -right-2 -bottom-2 z-10 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[10px] leading-none font-bold text-white"
-              aria-hidden="true"
-            >
-              {hintsRemaining}
-            </span>
-          </Button>
+          {isSixteenBySixteen ? clearButton : null}
+          {isSixteenBySixteen ? hintButton : null}
         </div>
       </div>
     </div>
