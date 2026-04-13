@@ -1,22 +1,40 @@
-import { Palette } from 'lucide-react';
-
 export function HomeHeader() {
+  const pixelCells = [
+    'brand-pixel-active',
+    'brand-pixel-soft',
+    'brand-pixel-active',
+    'brand-pixel-soft',
+    'brand-pixel-active',
+    'brand-pixel-soft',
+    'brand-pixel-active',
+    'brand-pixel-soft',
+    'brand-pixel-active',
+  ];
+
   return (
-    <div className="space-y-3 text-center">
-      <div className="flex justify-center">
-        <div className="relative">
-          <div className="from-primary/80 to-primary shadow-primary/25 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br shadow-lg">
-            <Palette className="text-primary-foreground h-8 w-8" />
-          </div>
-          <div className="bg-secondary border-background absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-lg border-2">
-            <span className="text-xs font-bold">9</span>
+    <div className="flex w-full items-center gap-3 lg:w-auto">
+      <div className="shrink-0">
+        <div className="brand-badge-surface flex h-11 w-11 items-center justify-center rounded-xl shadow-md">
+          <div className="grid grid-cols-3 gap-0.5" aria-hidden="true">
+            {pixelCells.map((pixelClass, index) => (
+              <span
+                key={`pixel-cell-${index}`}
+                className={`h-1.5 w-1.5 rounded-[2px] ${pixelClass}`}
+              />
+            ))}
           </div>
         </div>
       </div>
-      <h1 className="text-foreground text-3xl font-bold tracking-tight">Pixel Sudoku</h1>
-      <p className="text-muted-foreground text-balance">
-        Solve puzzles to reveal hidden pixel art masterpieces
-      </p>
+
+      <div className="min-w-0">
+        <h1 className="text-foreground truncate text-xl font-bold tracking-tight sm:text-2xl">
+          <span className="brand-title-accent">Pixel</span>{' '}
+          <span className="text-foreground">Sudoku</span>
+        </h1>
+        <p className="text-muted-foreground hidden text-sm md:block">
+          Solve puzzles to reveal hidden pixel art masterpieces
+        </p>
+      </div>
     </div>
   );
 }

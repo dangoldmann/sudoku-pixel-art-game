@@ -8,7 +8,6 @@ import { HomeActionButtons } from '@/components/home/home-action-buttons';
 import { HomeHeader } from '@/components/home/home-header';
 import { PuzzlePreviewCard } from '@/components/home/puzzle-preview-card';
 import { getRevealPercentagesByDifficulty } from '@/components/home/preview-utils';
-import { ResumeGameCard } from '@/components/home/resume-game-card';
 import type { HomeViewProps } from '@/components/home/types';
 
 export function HomeView({
@@ -31,9 +30,20 @@ export function HomeView({
   return (
     <div className="bg-background flex min-h-screen flex-col items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-5xl space-y-8">
-        <HomeHeader />
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <HomeHeader />
+          <HomeActionButtons
+            selectedSize={selectedSize}
+            selectedDifficulty={selectedDifficulty}
+            savedGame={savedGame}
+            completedCount={completedCount}
+            onStartGame={onStartGame}
+            onOpenGallery={onOpenGallery}
+            onResumeGame={onResumeGame}
+          />
+        </div>
 
-        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:gap-6">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-stretch lg:gap-6">
           <GameSetupCard
             selectedSize={selectedSize}
             selectedDifficulty={selectedDifficulty}
@@ -42,25 +52,15 @@ export function HomeView({
             onSelectDifficulty={setSelectedDifficulty}
           />
 
-          <div className="space-y-4">
+          <div className="h-full">
             <PuzzlePreviewCard
               selectedSize={selectedSize}
               selectedDifficultyLabel={selectedDifficultyLabel}
               selectedDifficulty={selectedDifficulty}
               selectedRevealPercentage={selectedRevealPercentage}
             />
-
-            <HomeActionButtons
-              selectedSize={selectedSize}
-              selectedDifficulty={selectedDifficulty}
-              savedGameExists={Boolean(savedGame)}
-              completedCount={completedCount}
-              onStartGame={onStartGame}
-              onOpenGallery={onOpenGallery}
-            />
           </div>
         </div>
-        {savedGame && <ResumeGameCard savedGame={savedGame} onResumeGame={onResumeGame} />}
       </div>
     </div>
   );

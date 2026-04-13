@@ -26,7 +26,7 @@ export function SudokuBoardPreview({
   const boardKey = `${gridSize}-${difficulty}-${revealPercentage}`;
 
   return (
-    <div className={cn('mx-auto w-full max-w-[260px] rounded-xl border p-2', style.frame)}>
+    <div className={cn('mx-auto w-full max-w-[280px] rounded-xl border p-2', style.frame)}>
       <div
         key={boardKey}
         className="bg-background/70 grid gap-[5px] rounded-lg p-1"

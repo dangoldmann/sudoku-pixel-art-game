@@ -1,36 +1,61 @@
-import { Palette, Play } from 'lucide-react';
+import { Palette, Play, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import type { SavedGame } from '@/hooks/use-game-storage';
 import type { Difficulty, GridSize } from '@/lib/game-data';
 
 interface HomeActionButtonsProps {
   selectedSize: GridSize;
   selectedDifficulty: Difficulty;
-  savedGameExists: boolean;
+  savedGame: SavedGame | null;
   completedCount: number;
   onStartGame: (gridSize: GridSize, difficulty: Difficulty) => void;
   onOpenGallery: () => void;
+  onResumeGame?: (saved: SavedGame) => void;
 }
 
 export function HomeActionButtons({
   selectedSize,
   selectedDifficulty,
-  savedGameExists,
+  savedGame,
   completedCount,
   onStartGame,
   onOpenGallery,
+  onResumeGame,
 }: HomeActionButtonsProps) {
+  const canResume = Boolean(savedGame && onResumeGame);
+
   return (
-    <div className="space-y-3">
+    <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end lg:w-auto">
       <Button
         onClick={() => onStartGame(selectedSize, selectedDifficulty)}
-        className="h-12 w-full gap-2 text-base font-semibold"
+        className="h-12 w-full gap-2 text-base font-semibold sm:w-auto sm:min-w-38"
         size="lg"
       >
         <Play className="h-5 w-5" />
-        {savedGameExists ? 'New Game' : 'Start Game'}
+        New Game
       </Button>
 
-      <Button variant="outline" onClick={onOpenGallery} className="w-full">
+      {canResume && (
+        <Button
+          variant="secondary"
+          onClick={() => {
+            if (savedGame && onResumeGame) {
+              onResumeGame(savedGame);
+            }
+          }}
+          className="h-12 w-full gap-2 text-base font-semibold sm:w-auto sm:min-w-38"
+          size="lg"
+        >
+          <RotateCcw className="h-5 w-5" />
+          Resume Game
+        </Button>
+      )}
+
+      <Button
+        variant="outline"
+        onClick={onOpenGallery}
+        className="h-12 w-full sm:w-auto sm:min-w-34"
+      >
         <Palette className="mr-2 h-4 w-4" />
         Gallery
         {completedCount > 0 && (
