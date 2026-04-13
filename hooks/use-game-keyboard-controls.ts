@@ -102,10 +102,10 @@ export function useGameKeyboardControls({
 
       if (gridSize === 16 && /^\d$/.test(e.key)) {
         const keyDigit = Number(e.key);
-        const hasPendingOne = pendingOneTimestampRef.current !== null;
+        const pendingTimestamp = pendingOneTimestampRef.current;
+        const hasPendingOne = pendingTimestamp !== null;
         const pendingIsFresh =
-          hasPendingOne &&
-          Date.now() - pendingOneTimestampRef.current <= MULTI_DIGIT_INPUT_WINDOW_MS;
+          pendingTimestamp !== null && Date.now() - pendingTimestamp <= MULTI_DIGIT_INPUT_WINDOW_MS;
 
         if (pendingIsFresh) {
           const combined = Number(`1${e.key}`);
