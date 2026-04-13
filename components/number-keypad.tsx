@@ -27,10 +27,9 @@ export function NumberKeypad({
 }: NumberKeypadProps) {
   const numbers = Array.from({ length: gridSize }, (_, i) => i + 1);
   const isSixteenBySixteen = gridSize === 16;
-  const actionButtonClass =
-    'h-9 w-9 shrink-0 px-0 text-sm font-semibold sm:h-12 sm:w-12 sm:text-base';
+  const actionButtonClass = 'h-10 w-10 shrink-0 px-0 sm:h-12 sm:w-12';
   const numberButtonClass =
-    'h-8 w-8 shrink-0 bg-transparent px-0 text-lg font-semibold hover:bg-transparent sm:h-12 sm:w-12 sm:border sm:bg-secondary sm:text-base sm:hover:bg-secondary/80';
+    'h-8 w-8 shrink-0 bg-transparent px-0 text-2xl font-semibold hover:bg-transparent sm:h-12 sm:w-12 sm:border sm:bg-secondary sm:text-lg sm:hover:bg-secondary/80';
 
   const clearButton = (
     <Button
@@ -78,7 +77,7 @@ export function NumberKeypad({
         <div
           className={
             isSixteenBySixteen
-              ? 'mx-auto grid w-fit grid-cols-[repeat(8,auto)_auto] grid-rows-2 items-stretch gap-1.5'
+              ? 'mx-auto grid w-fit grid-cols-[repeat(8,auto)_auto] grid-rows-2 items-center gap-1.5'
               : 'mx-auto flex w-fit min-w-max flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-center sm:gap-1.5'
           }
         >
