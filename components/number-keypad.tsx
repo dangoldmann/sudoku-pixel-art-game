@@ -30,7 +30,7 @@ export function NumberKeypad({
   const actionButtonClass =
     'h-9 w-9 shrink-0 px-0 text-sm font-semibold sm:h-12 sm:w-12 sm:text-base';
   const numberButtonClass =
-    'h-8 w-8 shrink-0 bg-transparent px-0 text-lg font-semibold hover:bg-transparent sm:h-12 sm:w-12 sm:bg-secondary sm:text-base sm:hover:bg-secondary/80';
+    'h-8 w-8 shrink-0 bg-transparent px-0 text-lg font-semibold hover:bg-transparent sm:h-12 sm:w-12 sm:border sm:bg-secondary sm:text-base sm:hover:bg-secondary/80';
 
   const clearButton = (
     <Button
@@ -83,13 +83,13 @@ export function NumberKeypad({
           }
         >
           {!isSixteenBySixteen ? (
-            <div className="order-1 flex items-center justify-end gap-1 sm:order-2 sm:gap-1.5">
+            <div className="order-1 flex items-center justify-end gap-2 sm:order-2">
               {clearButton}
               {hintButton}
             </div>
           ) : null}
           {!isSixteenBySixteen ? (
-            <div className="order-2 flex items-center gap-1 sm:order-1 sm:gap-1.5">
+            <div className="order-2 flex items-center gap-1.5 sm:order-1 sm:gap-2">
               {numbers.map((num) => (
                 <Button
                   key={num}
