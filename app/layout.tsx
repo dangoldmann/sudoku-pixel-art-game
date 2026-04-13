@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     'A unique Sudoku game where solving puzzles reveals hidden pixel art. Features 9x9 and 16x16 grids with multiple difficulty levels.',
   icons: {
     icon: '/icon.svg',
-    apple: '/apple-icon',
+    apple: '/apple-icon.png',
   },
 };
 
