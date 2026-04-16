@@ -1,19 +1,5 @@
 # AGENTS.md
 
-## Project Overview
-
-- Name: `sudoku-pixel-art-game`
-- Stack: Next.js 16, React 19, TypeScript (strict), Tailwind CSS 4
-- Tooling: ESLint 9 (flat config) + Prettier 3
-- Origin: Bootstrapped with v0 and linked to a v0 project
-
-## Goals For Agents
-
-- Keep changes small, clear, and easy to review.
-- Preserve existing behavior unless a task explicitly requests behavior changes.
-- Prioritize accessibility and responsive behavior for UI work.
-- Prefer consistent patterns already used in `app/`, `components/`, `hooks/`, and `lib/`.
-
 ## Repository Layout
 
 - `app/`: Next.js App Router pages/layouts.
@@ -63,13 +49,6 @@
 - Match existing formatting style (single quotes, semicolons, trailing commas).
 - Treat ESLint warnings/errors as actionable (`lint` runs with `--max-warnings=0`).
 
-## Naming Conventions
-
-- Components and type names: `PascalCase`
-- Hooks, variables, and functions: `camelCase` (`useXxx` for hooks)
-- Constants: `UPPER_SNAKE_CASE` for fixed immutable values
-- File names should follow the dominant convention already used in the target folder
-
 ## UI/UX Expectations
 
 - Keep layouts responsive for mobile and desktop.
@@ -93,13 +72,6 @@
 - Avoid adding dependencies unless they provide clear value relative to bundle cost.
 - Prefer CSS/Tailwind animations and transitions for lightweight motion.
 
-## Change Workflow
-
-1. Understand the target files and current behavior.
-2. Make the minimal set of edits needed to satisfy the request.
-3. Run relevant checks (`npm run lint`, `npm run format:check`, and `npm run build` when behavior/runtime could be affected).
-4. Summarize changed files and any known limitations.
-
 ## Safety Rules
 
 - Do not remove or rewrite unrelated user changes.
@@ -114,15 +86,3 @@
 2. Keep diffs focused on the requested task; avoid unrelated refactors.
 3. After editing, run relevant checks (`npm run lint`, `npm run format:check`, and `npm run build` when behavior/runtime could be affected).
 4. Summarize changed files, validation performed, and any follow-up needed.
-
-## Cursor / Copilot Rules
-
-- Checked locations currently not present:
-  - `.cursor/rules/`
-  - `.cursorrules`
-  - `.github/copilot-instructions.md`
-- If any of these are added later, treat them as higher-priority repository instructions and update this file accordingly.
-
-## Notes
-
-- Both `package-lock.json` and `pnpm-lock.yaml` are present; avoid unnecessary lockfile churn unless dependency changes are requested.
