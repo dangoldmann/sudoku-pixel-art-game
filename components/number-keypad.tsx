@@ -77,15 +77,15 @@ export function NumberKeypad({
         <div
           className={
             isSixteenBySixteen
-              ? 'sm:mx-auto grid sm:w-fit grid-cols-[repeat(8,auto)_auto] grid-rows-2 items-center gap-1.5'
-              : 'sm:mx-auto flex sm:w-fit min-w-max flex-col gap-4 sm:flex-row sm:items-center sm:justify-center sm:gap-1.5'
+              ? 'grid grid-cols-[repeat(8,auto)_auto] grid-rows-2 items-center gap-1.5 sm:mx-auto sm:w-fit'
+              : 'flex min-w-max flex-col gap-4 sm:mx-auto sm:w-fit sm:flex-row sm:items-center sm:justify-center sm:gap-1.5'
           }
         >
           {!isSixteenBySixteen ? (
             <div className="order-1 flex items-center justify-end gap-2 sm:order-2">
               {hintButton}
               {clearButton}
-            </div>  
+            </div>
           ) : null}
           {!isSixteenBySixteen ? (
             <div className="order-2 flex items-center justify-between gap-1.5 sm:order-1 sm:gap-2">
