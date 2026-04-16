@@ -21,7 +21,7 @@ export function GameSetupCard({
   return (
     <Card className="border-border/50 gap-0">
       <CardHeader className="pb-0">
-        <CardTitle className="text-muted-foreground text-sm font-medium">Game Setup</CardTitle>
+        <CardTitle className="text-muted-foreground font-medium">Game Setup</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 pt-4 pb-6">
         <section className="space-y-3">

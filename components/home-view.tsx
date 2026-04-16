@@ -28,9 +28,9 @@ export function HomeView({
   const selectedRevealPercentage = revealPercentagesByDifficulty[selectedDifficulty];
 
   return (
-    <div className="bg-background flex min-h-screen flex-col items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-5xl space-y-8">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div className="bg-background flex min-h-screen flex-col items-center justify-center p-3 sm:p-6">
+      <div className="w-full max-w-5xl space-y-5 lg:space-y-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <HomeHeader />
           <HomeActionButtons
             selectedSize={selectedSize}

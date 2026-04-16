@@ -18,7 +18,7 @@ export function PuzzlePreviewCard({
   return (
     <Card className="border-border/50 flex h-full flex-col gap-0">
       <CardHeader className="pb-0">
-        <CardTitle className="text-muted-foreground text-sm font-medium">Puzzle Preview</CardTitle>
+        <CardTitle className="text-muted-foreground font-medium">Puzzle Preview</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col space-y-4 pt-4 pb-6">
         <div className="space-y-1">

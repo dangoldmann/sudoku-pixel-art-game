@@ -17,7 +17,7 @@ export function GalleryView({ completedLevels, onBack }: GalleryViewProps) {
   const completedIds = new Set(completedLevels.map((l) => l.levelId));
 
   return (
-    <div className="bg-background min-h-screen p-4 sm:p-6">
+    <div className="bg-background min-h-screen p-3 sm:p-6">
       <div className="mx-auto max-w-4xl space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">

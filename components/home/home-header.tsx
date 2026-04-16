@@ -12,7 +12,7 @@ export function HomeHeader() {
   ];
 
   return (
-    <div className="flex w-full items-center gap-3 lg:w-auto">
+    <div className="flex items-center gap-3 lg:w-auto">
       <div className="shrink-0">
         <div className="brand-badge-surface flex h-11 w-11 items-center justify-center rounded-xl shadow-md">
           <div className="grid grid-cols-3 gap-0.5" aria-hidden="true">
@@ -31,7 +31,7 @@ export function HomeHeader() {
           <span className="brand-title-accent">Pixel</span>{' '}
           <span className="text-foreground">Sudoku</span>
         </h1>
-        <p className="text-muted-foreground hidden text-sm md:block">
+        <p className="text-muted-foreground hidden text-sm lg:block">
           Solve puzzles to reveal hidden pixel art masterpieces
         </p>
       </div>

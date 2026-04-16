@@ -25,7 +25,7 @@ export function HomeActionButtons({
   const canResume = Boolean(savedGame && onResumeGame);
 
   return (
-    <div className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end lg:w-auto">
+    <div className="flex w-full flex-col gap-2 md:flex-row md:flex-wrap md:justify-end lg:w-auto">
       <Button
         onClick={() => onStartGame(selectedSize, selectedDifficulty)}
         className="h-12 w-full gap-2 text-base font-semibold sm:w-auto sm:min-w-38"
@@ -43,7 +43,7 @@ export function HomeActionButtons({
               onResumeGame(savedGame);
             }
           }}
-          className="h-12 w-full gap-2 text-base font-semibold sm:w-auto sm:min-w-38"
+          className="h-12 w-full gap-2 border text-base font-semibold sm:w-auto sm:min-w-38"
           size="lg"
         >
           <RotateCcw className="h-5 w-5" />

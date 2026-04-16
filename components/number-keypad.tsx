@@ -29,7 +29,7 @@ export function NumberKeypad({
   const isSixteenBySixteen = gridSize === 16;
   const actionButtonClass = 'h-11 w-11 shrink-0 px-0 sm:h-12 sm:w-12';
   const numberButtonClass =
-    'h-8 w-8 shrink-0 bg-transparent px-0 text-2xl font-semibold hover:bg-transparent sm:h-12 sm:w-12 sm:border sm:bg-secondary sm:text-lg sm:hover:bg-secondary/80';
+    'h-8 w-8 shrink-0 bg-transparent px-0 text-3xl sm:font-semibold hover:bg-transparent sm:h-12 sm:w-12 sm:border sm:bg-secondary sm:text-lg sm:hover:bg-secondary/80';
 
   const clearButton = (
     <Button
@@ -77,18 +77,18 @@ export function NumberKeypad({
         <div
           className={
             isSixteenBySixteen
-              ? 'mx-auto grid w-fit grid-cols-[repeat(8,auto)_auto] grid-rows-2 items-center gap-1.5'
-              : 'mx-auto flex w-fit min-w-max flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-center sm:gap-1.5'
+              ? 'sm:mx-auto grid sm:w-fit grid-cols-[repeat(8,auto)_auto] grid-rows-2 items-center gap-1.5'
+              : 'sm:mx-auto flex sm:w-fit min-w-max flex-col gap-4 sm:flex-row sm:items-center sm:justify-center sm:gap-1.5'
           }
         >
           {!isSixteenBySixteen ? (
             <div className="order-1 flex items-center justify-end gap-2 sm:order-2">
-              {clearButton}
               {hintButton}
-            </div>
+              {clearButton}
+            </div>  
           ) : null}
           {!isSixteenBySixteen ? (
-            <div className="order-2 flex items-center gap-1.5 sm:order-1 sm:gap-2">
+            <div className="order-2 flex items-center justify-between gap-1.5 sm:order-1 sm:gap-2">
               {numbers.map((num) => (
                 <Button
                   key={num}

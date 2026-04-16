@@ -105,7 +105,7 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
   );
 
   return (
-    <div className="bg-background min-h-screen p-4 sm:p-6">
+    <div className="bg-background min-h-screen p-3 sm:p-6">
       <div className="mx-auto max-w-2xl space-y-4 sm:space-y-6">
         <GameHeader
           elapsedTimeLabel={formatTime(elapsedTime)}
@@ -159,7 +159,7 @@ export function GameView({ level, resumeData, onBack, onComplete }: GameViewProp
         )}
 
         {!showCompleted && (
-          <p className="text-muted-foreground text-center text-xs">
+          <p className="text-muted-foreground hidden text-center text-xs lg:block">
             Click a cell and enter a number. Use arrow keys to navigate.
           </p>
         )}
