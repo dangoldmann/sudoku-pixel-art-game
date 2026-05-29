@@ -16,6 +16,7 @@ export function HomeView({
   onResumeGame,
   savedGame,
   completedCount,
+  isStorageLoaded,
 }: HomeViewProps) {
   const [selectedSize, setSelectedSize] = useState<GridSize>(9);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('easy');
@@ -37,6 +38,7 @@ export function HomeView({
             selectedDifficulty={selectedDifficulty}
             savedGame={savedGame}
             completedCount={completedCount}
+            isStorageLoaded={isStorageLoaded}
             onStartGame={onStartGame}
             onOpenGallery={onOpenGallery}
             onResumeGame={onResumeGame}

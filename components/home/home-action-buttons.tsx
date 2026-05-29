@@ -1,5 +1,6 @@
 import { Palette, Play, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { SavedGame } from '@/hooks/use-game-storage';
 import type { Difficulty, GridSize } from '@/lib/game-data';
 
@@ -8,6 +9,7 @@ interface HomeActionButtonsProps {
   selectedDifficulty: Difficulty;
   savedGame: SavedGame | null;
   completedCount: number;
+  isStorageLoaded: boolean;
   onStartGame: (gridSize: GridSize, difficulty: Difficulty) => void;
   onOpenGallery: () => void;
   onResumeGame?: (saved: SavedGame) => void;
@@ -18,6 +20,7 @@ export function HomeActionButtons({
   selectedDifficulty,
   savedGame,
   completedCount,
+  isStorageLoaded,
   onStartGame,
   onOpenGallery,
   onResumeGame,
@@ -35,7 +38,20 @@ export function HomeActionButtons({
         New Game
       </Button>
 
-      {canResume && (
+      {!isStorageLoaded && (
+        <Button
+          variant="secondary"
+          disabled
+          aria-busy="true"
+          className="h-12 w-full gap-2 border text-base font-semibold sm:w-auto sm:min-w-38"
+          size="lg"
+        >
+          <RotateCcw className="h-5 w-5 animate-pulse" />
+          Loading save...
+        </Button>
+      )}
+
+      {isStorageLoaded && canResume && (
         <Button
           variant="secondary"
           onClick={() => {
@@ -58,7 +74,8 @@ export function HomeActionButtons({
       >
         <Palette className="mr-2 h-4 w-4" />
         Gallery
-        {completedCount > 0 && (
+        {!isStorageLoaded && <Skeleton className="ml-2 h-5 w-7 rounded-full" />}
+        {isStorageLoaded && completedCount > 0 && (
           <span className="bg-primary/10 text-primary ml-2 rounded-full px-2 py-0.5 text-xs font-medium">
             {completedCount}
           </span>

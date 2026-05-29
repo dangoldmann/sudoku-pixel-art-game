@@ -87,15 +87,6 @@ export function SudokuApp() {
     setView('gallery');
   }, []);
 
-  // Show loading state while localStorage is being read
-  if (!isLoaded) {
-    return (
-      <div className="bg-background flex min-h-screen items-center justify-center">
-        <div className="text-muted-foreground animate-pulse">Loading...</div>
-      </div>
-    );
-  }
-
   if (view === 'game' && currentLevel) {
     return (
       <GameView
@@ -108,7 +99,13 @@ export function SudokuApp() {
   }
 
   if (view === 'gallery') {
-    return <GalleryView completedLevels={completedLevels} onBack={handleBackToHome} />;
+    return (
+      <GalleryView
+        completedLevels={completedLevels}
+        isStorageLoaded={isLoaded}
+        onBack={handleBackToHome}
+      />
+    );
   }
 
   return (
@@ -118,6 +115,7 @@ export function SudokuApp() {
       onResumeGame={handleResumeGame}
       savedGame={savedGame}
       completedCount={completedLevels.length}
+      isStorageLoaded={isLoaded}
     />
   );
 }

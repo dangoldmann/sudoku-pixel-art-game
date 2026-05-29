@@ -7,4 +7,5 @@ export interface HomeViewProps {
   onResumeGame: (saved: SavedGame) => void;
   savedGame: SavedGame | null;
   completedCount: number;
+  isStorageLoaded: boolean;
 }
