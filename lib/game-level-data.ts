@@ -1,56 +1,65 @@
 import type { GridSize, Level } from './game-data';
 
-// Helper to generate a valid Sudoku solution
-function generateSudokuSolution(size: GridSize): number[][] {
-  const grid: number[][] = Array(size)
-    .fill(null)
-    .map(() => Array(size).fill(0));
-  const boxSize = size === 9 ? 3 : 4;
+function createSeededRandom(seed: string): () => number {
+  let hash = 2166136261;
 
-  function isValid(row: number, col: number, num: number): boolean {
-    for (let i = 0; i < size; i++) {
-      if (grid[row][i] === num || grid[i][col] === num) return false;
-    }
-    const startRow = Math.floor(row / boxSize) * boxSize;
-    const startCol = Math.floor(col / boxSize) * boxSize;
-    for (let i = 0; i < boxSize; i++) {
-      for (let j = 0; j < boxSize; j++) {
-        if (grid[startRow + i][startCol + j] === num) return false;
-      }
-    }
-    return true;
+  for (let i = 0; i < seed.length; i++) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
   }
 
-  function solve(): boolean {
-    for (let row = 0; row < size; row++) {
-      for (let col = 0; col < size; col++) {
-        if (grid[row][col] === 0) {
-          const nums = shuffle(Array.from({ length: size }, (_, i) => i + 1));
-          for (const num of nums) {
-            if (isValid(row, col, num)) {
-              grid[row][col] = num;
-              if (solve()) return true;
-              grid[row][col] = 0;
-            }
-          }
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  solve();
-  return grid;
+  return () => {
+    hash += 0x6d2b79f5;
+    let t = hash;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
-function shuffle<T>(array: T[]): T[] {
-  const arr = [...array];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+function shuffleWithRandom<T>(array: T[], random: () => number): T[] {
+  const values = [...array];
+  for (let i = values.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [values[i], values[j]] = [values[j], values[i]];
   }
-  return arr;
+  return values;
+}
+
+function createIndexOrder(size: GridSize, boxSize: number, random: () => number): number[] {
+  const groups = shuffleWithRandom(
+    Array.from({ length: size / boxSize }, (_, i) => i),
+    random,
+  );
+
+  return groups.flatMap((groupIndex) => {
+    const members = shuffleWithRandom(
+      Array.from({ length: boxSize }, (_, i) => i),
+      random,
+    );
+    return members.map((memberIndex) => groupIndex * boxSize + memberIndex);
+  });
+}
+
+// Generate a valid Sudoku solution in O(n^2) time instead of running
+// a recursive backtracking solver during client-side module initialization.
+function generateSudokuSolution(size: GridSize, seed: string): number[][] {
+  const boxSize = size === 9 ? 3 : 4;
+  const random = createSeededRandom(`${seed}-${size}`);
+  const rowOrder = createIndexOrder(size, boxSize, random);
+  const colOrder = createIndexOrder(size, boxSize, random);
+  const symbolOrder = shuffleWithRandom(
+    Array.from({ length: size }, (_, i) => i + 1),
+    random,
+  );
+
+  return rowOrder.map((sourceRow) =>
+    colOrder.map((sourceCol) => {
+      const baseValue =
+        ((sourceRow * boxSize + Math.floor(sourceRow / boxSize) + sourceCol) % size) + 1;
+      return symbolOrder[baseValue - 1];
+    }),
+  );
 }
 
 // Pixel art patterns - each returns a 2D array of hex colors
@@ -253,7 +262,7 @@ export const levels: Level[] = [
     name: 'Heart',
     gridSize: 9,
     difficulty: 'easy',
-    solution: generateSudokuSolution(9),
+    solution: generateSudokuSolution(9, 'heart-9-easy'),
     pixelColors: pixelArtPatterns.heart9x9(),
     initialRevealed: 55,
   },
@@ -262,7 +271,7 @@ export const levels: Level[] = [
     name: 'Star',
     gridSize: 9,
     difficulty: 'easy',
-    solution: generateSudokuSolution(9),
+    solution: generateSudokuSolution(9, 'star-9-easy'),
     pixelColors: pixelArtPatterns.star9x9(),
     initialRevealed: 55,
   },
@@ -271,7 +280,7 @@ export const levels: Level[] = [
     name: 'Mushroom',
     gridSize: 9,
     difficulty: 'medium',
-    solution: generateSudokuSolution(9),
+    solution: generateSudokuSolution(9, 'mushroom-9-medium'),
     pixelColors: pixelArtPatterns.mushroom9x9(),
     initialRevealed: 45,
   },
@@ -280,7 +289,7 @@ export const levels: Level[] = [
     name: 'Tree',
     gridSize: 9,
     difficulty: 'medium',
-    solution: generateSudokuSolution(9),
+    solution: generateSudokuSolution(9, 'tree-9-medium'),
     pixelColors: pixelArtPatterns.tree9x9(),
     initialRevealed: 45,
   },
@@ -289,7 +298,7 @@ export const levels: Level[] = [
     name: 'Sun',
     gridSize: 9,
     difficulty: 'hard',
-    solution: generateSudokuSolution(9),
+    solution: generateSudokuSolution(9, 'sun-9-hard'),
     pixelColors: pixelArtPatterns.sun9x9(),
     initialRevealed: 35,
   },
@@ -298,7 +307,7 @@ export const levels: Level[] = [
     name: 'Ghost',
     gridSize: 9,
     difficulty: 'hard',
-    solution: generateSudokuSolution(9),
+    solution: generateSudokuSolution(9, 'ghost-9-hard'),
     pixelColors: pixelArtPatterns.ghost9x9(),
     initialRevealed: 35,
   },
@@ -307,7 +316,7 @@ export const levels: Level[] = [
     name: 'Flower',
     gridSize: 16,
     difficulty: 'easy',
-    solution: generateSudokuSolution(16),
+    solution: generateSudokuSolution(16, 'flower-16-easy'),
     pixelColors: pixelArtPatterns.flower16x16(),
     initialRevealed: 50,
   },
@@ -316,7 +325,7 @@ export const levels: Level[] = [
     name: 'Rocket',
     gridSize: 16,
     difficulty: 'medium',
-    solution: generateSudokuSolution(16),
+    solution: generateSudokuSolution(16, 'rocket-16-medium'),
     pixelColors: pixelArtPatterns.rocket16x16(),
     initialRevealed: 40,
   },
@@ -325,7 +334,7 @@ export const levels: Level[] = [
     name: 'Cat',
     gridSize: 16,
     difficulty: 'hard',
-    solution: generateSudokuSolution(16),
+    solution: generateSudokuSolution(16, 'cat-16-hard'),
     pixelColors: pixelArtPatterns.cat16x16(),
     initialRevealed: 30,
   },
